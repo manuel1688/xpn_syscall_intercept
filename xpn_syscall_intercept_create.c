@@ -6,6 +6,7 @@
 #include <sys/uio.h> 
 
 #include "xpn_syscall_intercept_create.h"
+#include "debug_msg.h"
 
 static int xpn_adaptor_initCalled = 0;
 static int xpn_adaptor_initCalled_getenv = 0; 
