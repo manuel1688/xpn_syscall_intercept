@@ -5,5 +5,5 @@
 # Haz checkout al commit específico
 #git checkout 2c8765fa292bc9c28a22624c528580d54658813d
 
-rm -r ../Makefile
-mv Makefile ../
+rm -r Makefile
+mv ../Makefile .
