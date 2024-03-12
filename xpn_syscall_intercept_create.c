@@ -23,6 +23,41 @@ DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
 long   fdsdirtable_first_free = 0L;
 
+void fdsdirtable_realloc ( void )
+{
+  long          old_size = fdsdirtable_size;
+  DIR ** fdsdirtable_aux = fdsdirtable;
+  
+  debug_info("[bypass] >> Before fdsdirtable_realloc....\n");
+  
+  if ( NULL == fdsdirtable )
+  {
+    fdsdirtable_size = (long) MAX_DIRS;
+    fdsdirtable = (DIR **) malloc(MAX_DIRS * sizeof(DIR *));
+  }
+  else
+  {
+    fdsdirtable_size = fdsdirtable_size * 2;
+    fdsdirtable = (DIR **) realloc((DIR **)fdsdirtable, fdsdirtable_size * sizeof(DIR *));
+  }
+
+  if ( NULL == fdsdirtable )
+  {
+    debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
+    if (NULL != fdsdirtable_aux) {
+      free(fdsdirtable_aux);
+    }
+
+    exit(-1);
+  }
+  
+  for (int i = old_size; i < fdsdirtable_size; ++i) {
+    fdsdirtable[i] = NULL;
+  }
+
+  debug_info("[bypass] << After fdsdirtable_realloc....\n");
+}
+
 int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar un descriptor de fichero en la tabla de descriptores de ficheros
 {
   debug_info("[bypass] >> Before fdstable_put....\n");
@@ -92,41 +127,6 @@ int add_xpn_file_to_fdstable ( int fd ) // esta funcion se encarga de añadir un
   debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
 
   return ret;
-}
-
-void fdsdirtable_realloc ( void )
-{
-  long          old_size = fdsdirtable_size;
-  DIR ** fdsdirtable_aux = fdsdirtable;
-  
-  debug_info("[bypass] >> Before fdsdirtable_realloc....\n");
-  
-  if ( NULL == fdsdirtable )
-  {
-    fdsdirtable_size = (long) MAX_DIRS;
-    fdsdirtable = (DIR **) malloc(MAX_DIRS * sizeof(DIR *));
-  }
-  else
-  {
-    fdsdirtable_size = fdsdirtable_size * 2;
-    fdsdirtable = (DIR **) realloc((DIR **)fdsdirtable, fdsdirtable_size * sizeof(DIR *));
-  }
-
-  if ( NULL == fdsdirtable )
-  {
-    debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
-    if (NULL != fdsdirtable_aux) {
-      free(fdsdirtable_aux);
-    }
-
-    exit(-1);
-  }
-  
-  for (int i = old_size; i < fdsdirtable_size; ++i) {
-    fdsdirtable[i] = NULL;
-  }
-
-  debug_info("[bypass] << After fdsdirtable_realloc....\n");
 }
 
 void fdsdirtable_init ( void )
