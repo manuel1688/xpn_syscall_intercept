@@ -6,4 +6,4 @@
 #git checkout 2c8765fa292bc9c28a22624c528580d54658813d
 
 rm -r Makefile
-mv scripts/Makefile .
+cp scripts/Makefile .
