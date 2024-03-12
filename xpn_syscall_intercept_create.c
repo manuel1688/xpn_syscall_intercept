@@ -23,6 +23,42 @@ DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
 long   fdsdirtable_first_free = 0L;
 
+int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar un descriptor de fichero en la tabla de descriptores de ficheros
+{
+  debug_info("[bypass] >> Before fdstable_put....\n");
+
+  for (int i = fdstable_first_free; i < fdstable_size; ++i)
+  {
+    if ( fdstable[i].type == FD_FREE ) {
+      fdstable[i] = fd;
+      fdstable_first_free = (long)(i + 1);
+
+      debug_info("[bypass]\t fdstable_put -> fd %d ; type: %d ; real_fd: %d\n", i + PLUSXPN, fdstable[i].type, fdstable[i].real_fd);
+      debug_info("[bypass] << After fdstable_put....\n");
+
+      return i + PLUSXPN;
+    }
+  }
+
+  long old_size = fdstable_size;
+
+  fdstable_realloc();
+
+  if ( fdstable[old_size].type == FD_FREE ) {
+    fdstable[old_size] = fd;
+
+    debug_info("[bypass]\t fdstable_put -> fd %ld ; type: %d ; real_fd: %d\n", old_size + PLUSXPN, fdstable[old_size].type, fdstable[old_size].real_fd);
+    debug_info("[bypass] << After fdstable_put....\n");
+
+    return old_size + PLUSXPN;
+  }
+
+  debug_info("[bypass]\t fdstable_put -> -1\n");
+  debug_info("[bypass] << After fdstable_put....\n");
+
+  return -1;
+}
+
 int add_xpn_file_to_fdstable ( int fd ) // esta funcion se encarga de añadir un descriptor de fichero correspondiente a un fichero de XPN en la tabla de descriptores de ficheros
 {
   struct stat st; // estructura que almacena la informacion de un fichero
@@ -287,5 +323,5 @@ init(void)
 	// Set up the callback function
 	intercept_hook_point = hook;
 }
-
+ 
 
