@@ -10,7 +10,7 @@ CC=/home/lab/bin/mpich/bin/mpicc
 # cc xpn_syscall_intercept_create.c -lsyscall_intercept -fpic -shared -o xpn_syscall_intercept_create.so
 FLAGS=-Wall -Wextra -fpic -std=c11
 INCLUDE=-I../../include -I../../include/base -I../../include/xpn_client -I../../include/bypass -I../../../mxml -DNOT_TO_USE_FCNTL_H -DNOT_TO_USE_STDLIB_H
-LIBS=-L../../../xpn/src/xpn_client -lxpn -lmxml -lpthread -ldl -lsyscall_intercept -fpic
+LIBS=-L../base -L../xpn_client -lxpn -lmxml -lpthread -ldl -lsyscall_intercept -fpic
 
 all:
 	$(CC) $(FLAGS) $(INCLUDE) -c xpn_syscall_intercept_create.c
