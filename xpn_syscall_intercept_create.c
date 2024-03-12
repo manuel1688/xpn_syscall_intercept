@@ -19,6 +19,41 @@ struct generic_fd * fdstable = NULL;
 long   fdstable_size = 0L;
 long   fdstable_first_free = 0L;
 
+void fdsdirtable_realloc ( void )
+{
+  long          old_size = fdsdirtable_size;
+  DIR ** fdsdirtable_aux = fdsdirtable;
+  
+  debug_info("[bypass] >> Before fdsdirtable_realloc....\n");
+  
+  if ( NULL == fdsdirtable )
+  {
+    fdsdirtable_size = (long) MAX_DIRS;
+    fdsdirtable = (DIR **) malloc(MAX_DIRS * sizeof(DIR *));
+  }
+  else
+  {
+    fdsdirtable_size = fdsdirtable_size * 2;
+    fdsdirtable = (DIR **) realloc((DIR **)fdsdirtable, fdsdirtable_size * sizeof(DIR *));
+  }
+
+  if ( NULL == fdsdirtable )
+  {
+    debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
+    if (NULL != fdsdirtable_aux) {
+      free(fdsdirtable_aux);
+    }
+
+    exit(-1);
+  }
+  
+  for (int i = old_size; i < fdsdirtable_size; ++i) {
+    fdsdirtable[i] = NULL;
+  }
+
+  debug_info("[bypass] << After fdsdirtable_realloc....\n");
+}
+
 void fdsdirtable_init ( void )
 {
   debug_info("[bypass] >> Before fdsdirtable_init....\n");
