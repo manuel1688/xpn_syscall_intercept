@@ -7,12 +7,17 @@
 
 #include "xpn_syscall_intercept_create.h"
 #include "debug_msg.h"
+#include <stdlib.h>
 
 static int xpn_adaptor_initCalled = 0;
 static int xpn_adaptor_initCalled_getenv = 0; 
 
 char *xpn_adaptor_partition_prefix = "/tmp/expand/"; // Original --> xpn:// 
 int   xpn_prefix_change_verified = 0;
+
+struct generic_fd * fdstable = NULL;
+long   fdstable_size = 0L;
+long   fdstable_first_free = 0L;
 
 void fdsdirtable_init ( void )
 {
