@@ -23,6 +23,41 @@ DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
 long   fdsdirtable_first_free = 0L;
 
+int add_xpn_file_to_fdstable ( int fd ) // esta funcion se encarga de añadir un descriptor de fichero correspondiente a un fichero de XPN en la tabla de descriptores de ficheros
+{
+  struct stat st; // estructura que almacena la informacion de un fichero
+  struct generic_fd virtual_fd; // descriptor de fichero generico
+  
+  debug_info("[bypass] >> Before add_xpn_file_to_fdstable....\n");
+  debug_info("[bypass]    1) fd  => %d\n", fd);
+
+  int ret = fd; // valor de retorno
+
+  // check arguments
+  if (fd < 0) {
+    debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
+    debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
+
+    return ret;
+  } 
+
+  // fstat(fd...
+  xpn_fstat(fd, &st); // obtiene la informacion del fichero correspondiente al descriptor de fichero fd
+
+  // setup virtual_fd
+  virtual_fd.type    = FD_XPN;
+  virtual_fd.real_fd = fd;
+  virtual_fd.is_file = (S_ISDIR(st.st_mode)) ? 0 : 1;
+
+  // insert into fdstable
+  ret = fdstable_put ( virtual_fd );
+
+  debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
+  debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
+
+  return ret;
+}
+
 void fdsdirtable_realloc ( void )
 {
   long          old_size = fdsdirtable_size;
