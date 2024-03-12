@@ -14,6 +14,15 @@ static int xpn_adaptor_initCalled_getenv = 0;
 char *xpn_adaptor_partition_prefix = "/tmp/expand/"; // Original --> xpn:// 
 int   xpn_prefix_change_verified = 0;
 
+void fdsdirtable_init ( void )
+{
+  debug_info("[bypass] >> Before fdsdirtable_init....\n");
+
+  fdsdirtable_realloc();
+
+  debug_info("[bypass] << After fdsdirtable_init....\n");
+}
+
 void fdstable_realloc ( void ) 
 {
   long old_size = fdstable_size;
