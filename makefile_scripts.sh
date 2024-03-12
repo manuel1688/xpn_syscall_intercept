@@ -5,5 +5,8 @@
 # Haz checkout al commit específico
 #git checkout 2c8765fa292bc9c28a22624c528580d54658813d
 
+rm -r xpn_syscall_intercept_create.so
+rm -r xpn_syscall_intercept_create.o
 rm -r Makefile
 cp scripts/Makefile .
+make
