@@ -14,6 +14,60 @@ static int xpn_adaptor_initCalled_getenv = 0;
 char *xpn_adaptor_partition_prefix = "/tmp/expand/"; // Original --> xpn:// 
 int   xpn_prefix_change_verified = 0;
 
+int xpn_adaptor_keepInit ( void )
+{
+  int    ret;
+  char * xpn_adaptor_initCalled_env = NULL;
+  
+  debug_info("[bypass] >> Before xpn_adaptor_keepInit....\n");
+
+  if (0 == xpn_adaptor_initCalled_getenv)
+  {
+    xpn_adaptor_initCalled_env = getenv("INITCALLED");
+    xpn_adaptor_initCalled     = 0;
+
+    if (xpn_adaptor_initCalled_env != NULL) {
+      xpn_adaptor_initCalled = atoi(xpn_adaptor_initCalled_env);
+    }
+
+    xpn_adaptor_initCalled_getenv = 1;
+  }
+  
+  ret = 0;
+
+  // If expand has not been initialized, then initialize it.
+  if (0 == xpn_adaptor_initCalled)
+  {
+    xpn_adaptor_initCalled = 1; //TODO: Delete
+    setenv("INITCALLED", "1", 1);
+
+    debug_info("[bypass]\t Before xpn_init()\n");
+
+    fdstable_init ();
+    fdsdirtable_init ();
+    ret = xpn_init();
+
+    debug_info("[bypass]\t After xpn_init() -> %d\n", ret);
+
+    if (ret < 0)
+    {
+      debug_error( "ERROR: Expand xpn_init couldn't be initialized :-(\n");
+      xpn_adaptor_initCalled = 0;
+      setenv("INITCALLED", "0", 1);
+    }
+    else
+    {
+      xpn_adaptor_initCalled = 1;
+      setenv("INITCALLED", "1", 1);
+    }
+  }
+
+  debug_info("[bypass]\t xpn_adaptor_keepInit -> %d\n", ret);
+  debug_info("[bypass] << After xpn_adaptor_keepInit....\n");
+
+  return ret;
+}
+
 int is_xpn_prefix   ( const char * path ) // valida si el path contiene el prefijo de XPN 
 {
   if (0 == xpn_prefix_change_verified)
