@@ -19,6 +19,10 @@ struct generic_fd * fdstable = NULL;
 long   fdstable_size = 0L;
 long   fdstable_first_free = 0L;
 
+DIR ** fdsdirtable = NULL;
+long   fdsdirtable_size = 0L;
+long   fdsdirtable_first_free = 0L;
+
 void fdsdirtable_realloc ( void )
 {
   long          old_size = fdsdirtable_size;
