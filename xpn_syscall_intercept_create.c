@@ -13,11 +13,11 @@ static int xpn_adaptor_initCalled = 0;
 static int xpn_adaptor_initCalled_getenv = 0; 
 
 char *xpn_adaptor_partition_prefix = "/tmp/expand/"; // Original --> xpn:// 
-int   xpn_prefix_change_verified = 0;
+int  xpn_prefix_change_verified = 0;
 
 struct generic_fd * fdstable = NULL;
 long   fdstable_size = 0L;
-long   fdstable_first_free = 0L;
+long   fdstable_first_free = 0L; 
 
 DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
@@ -257,8 +257,17 @@ int is_xpn_prefix   ( const char * path ) // valida si el path contiene el prefi
   return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix) );
 }
 
-const char * skip_xpn_prefix ( const char * path ) // esta funcion se encarga de saltar el prefijo de XPN con el fin de obtener el path real para el sistema de archivos que se esta utilizando
+/*
+  Esta funcion se encarga de saltar el prefijo de XPN con el fin de obtener 
+  el path real para el sistema de archivos que se esta utilizando
+*/
+const char * skip_xpn_prefix ( const char * path ) 
 {
+  /*
+    esta linea se encarga de saltar el prefijo de XPN con 
+    el fin de obtener el path real para el sistema de archivos que se esta utilizando
+    el path /tmp/expand/P1/demo.txt se convierte en /P1/demo.txt
+  */
   return (const char *)(path + strlen(xpn_adaptor_partition_prefix));
 }
 
@@ -303,9 +312,9 @@ hook(long syscall_number,
 		// Not an XPN partition. We must link with the standard library
 		else
 		{
-			// debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+			debug_info("[bypass]\t try to dlsym_creat %s\n", path);
 			// ret = dlsym_creat(path, mode);
-			// debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
+			debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
 			*result = syscall_no_intercept(SYS_creat, arg0, arg1);
 			return 0;
 		}
@@ -320,7 +329,6 @@ hook(long syscall_number,
 static __attribute__((constructor)) void
 init(void)
 {
-	// Set up the callback function
 	intercept_hook_point = hook;
 }
  
