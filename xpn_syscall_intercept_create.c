@@ -8,6 +8,7 @@
 #include "xpn_syscall_intercept_create.h"
 #include "debug_msg.h"
 #include <stdlib.h>
+#include <linux/kernel.h>
 
 static int xpn_adaptor_initCalled = 0;
 static int xpn_adaptor_initCalled_getenv = 0; 
@@ -310,6 +311,7 @@ hook(long syscall_number,
 
 			fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
 			ret = add_xpn_file_to_fdstable(fd);
+      printk(KERN_INFO "The value of my_var is: %d\n", ret);
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       return ret;
 		}
