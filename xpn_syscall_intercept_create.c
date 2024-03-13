@@ -315,7 +315,7 @@ hook(long syscall_number,
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       printf("fd: %d\n", fd);
       *result = ret;
-      return ret;
+      return 0;
 		}
 		// Not an XPN partition. We must link with the standard library
 		else
