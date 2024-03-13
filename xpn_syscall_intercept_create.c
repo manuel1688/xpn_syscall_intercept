@@ -12,7 +12,8 @@
 static int xpn_adaptor_initCalled = 0;
 static int xpn_adaptor_initCalled_getenv = 0; 
 
-char *xpn_adaptor_partition_prefix = "/tmp/expand/"; // Original --> xpn:// 
+// Original --> xpn:// 
+char *xpn_adaptor_partition_prefix = "/tmp/expand/"; 
 int  xpn_prefix_change_verified = 0;
 
 struct generic_fd * fdstable = NULL;
@@ -239,8 +240,10 @@ int xpn_adaptor_keepInit ( void )
   return ret;
 }
 
-int is_xpn_prefix   ( const char * path ) // valida si el path contiene el prefijo de XPN 
+// valida si el path contiene el prefijo de XPN 
+int is_xpn_prefix   ( const char * path ) 
 {
+  // Si el prefijo de XPN no ha sido verificado, entonces se verifica
   if (0 == xpn_prefix_change_verified)
   {
     xpn_prefix_change_verified = 1;
@@ -252,8 +255,12 @@ int is_xpn_prefix   ( const char * path ) // valida si el path contiene el prefi
     }
   }
   
+  // el xpn_adaptor_partition_prefix se almacena en un puntero de tipo char llama prefix
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
 
+  // el valor de prefix es /tmp/expand/
+  // el valor de path es /tmp/expand/P1/demo.txt
+  // se compara hasta el tamaño de prefix que es 12
   return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix) );
 }
 
@@ -264,9 +271,9 @@ int is_xpn_prefix   ( const char * path ) // valida si el path contiene el prefi
 const char * skip_xpn_prefix ( const char * path ) 
 {
   /*
-    esta linea se encarga de saltar el prefijo de XPN con 
-    el fin de obtener el path real para el sistema de archivos que se esta utilizando
-    el path /tmp/expand/P1/demo.txt se convierte en /P1/demo.txt
+    El valor de path es un puntero de tipo char que almacena /tmp/expand/P1/demo.txt
+    luego se le suma el tamaño de xpn_adaptor_partition_prefix que es 12
+    como resultado es un puntero de tipo char que almacena P1/demo.txt
   */
   return (const char *)(path + strlen(xpn_adaptor_partition_prefix));
 }
@@ -284,20 +291,16 @@ hook(long syscall_number,
 	(void) arg5;
 
 	// fd1 = creat(argv[1], 00777);
-	// /tmp/expand/P1/demo.txt  1
-	// cuando llama la localidad, el path cambia por lo tanto entraria en syscall_no_intercept
 	if (syscall_number == SYS_creat) {
-		/*
-		creat recibe 2 argumentos, el primer argumento es el path y el segundo es el modo
-		los valores de modo puede ser: 00777, 00700, 00666, 00600
-		00777: todos los permisos
-		arg0 ES EL PATH 
-		*/
+
+    /*
+    el path es /tmp/expand/P1/demo.txt
+    luego se almacena en un puntero de tipo char
+    */
 		char *path = (char *)arg0;
 		mode_t mode = (mode_t)arg1; 
 		int fd,ret;
 		debug_info("[bypass] >> Before creat....\n");
-		// This if checks if variable path passed as argument starts with the expand prefix.
 		if (is_xpn_prefix(path))
 		{
 			// We must initialize expand if it has not been initialized yet.
@@ -308,6 +311,7 @@ hook(long syscall_number,
 			fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
 			ret = add_xpn_file_to_fdstable(fd);
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
+      return ret;
 		}
 		// Not an XPN partition. We must link with the standard library
 		else
