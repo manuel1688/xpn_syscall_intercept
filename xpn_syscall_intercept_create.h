@@ -112,6 +112,32 @@
   #define O_CLOEXEC 02000000  // set close_on_exec */
   #endif
 
+
+  /* ... Data structures / Estructuras de datos ........................ */
+
+  struct __dirstream
+  {
+    int fd;                       // File descriptor.
+    //__libc_lock_define (, lock) // Mutex lock for this structure. //TODO
+    size_t allocation;            // Space allocated for the block.
+    size_t size;                  // Total valid data in the block.
+    size_t offset;                // Current offset into the block.
+    off_t  filepos;               // Position of next entry to read.
+    // Directory block.
+    char data[0] __attribute__ ((aligned (__alignof__ (void*))));
+
+    char * path;
+  };
+
+  struct generic_fd
+  {
+    int type;
+    int real_fd;
+    int is_file;
+  };
+
+
+
   /* ................................................................... */
 
 #endif
