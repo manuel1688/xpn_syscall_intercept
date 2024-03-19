@@ -1,6 +1,8 @@
 #El directorio xpn_syscall_intercept contiene la nueva libreria de intercepcion
 #que debe ser compilada con syscall_intercept.git
-1. Hace pull del xpn_syscall_intercept: https://github.com/manuel1688/xpn_syscall_intercept.git
+
+#En xpn/src
+1. Hace clone del xpn_syscall_intercept: https://github.com/manuel1688/xpn_syscall_intercept.git
 
 # Dentro de directiro xpn_syscall_intercept, syscall_intercept es la libreria
 # de intel que usaremos para compilar la nueva libreria de xpn
@@ -16,7 +18,7 @@
 # la nueva libreria de intercepcion
 #TODO se debe remover todos los archivos de syscall_intercept.git ya que solo se usa para compilar
 #la nueva liberia
-8. Ejecutar el script makefile_scripts.sh
+8. bash makefile_scripts.sh
 9. make
 
 #xpn/test/integrity
