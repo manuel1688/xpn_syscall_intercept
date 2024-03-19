@@ -294,11 +294,9 @@ hook(long syscall_number,
 	// fd1 = creat(argv[1], 00777);
 	if (syscall_number == SYS_creat) {
 
-    /*
-    el path es /tmp/expand/P1/demo.txt
-    luego se almacena en un puntero de tipo char
-    */
+    // Se inicia el puntero que almacena el path
 		char *path = (char *)arg0;
+    // mode almacenara el valor de arg1 que es el modo de apertura del fichero
 		mode_t mode = (mode_t)arg1; 
 		int fd,ret;
 		debug_info("[bypass] >> Before creat....\n");
@@ -311,9 +309,7 @@ hook(long syscall_number,
 
 			fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
 			ret = add_xpn_file_to_fdstable(fd);
-      printf("ret: %d\n", ret);
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
-      printf("fd: %d\n", fd);
       *result = ret;
       return 0;
 		}
@@ -330,7 +326,6 @@ hook(long syscall_number,
 		debug_info("[bypass] << After creat....\n");
 		return ret;
 	} 
-	
 	return 1;
 }
 
