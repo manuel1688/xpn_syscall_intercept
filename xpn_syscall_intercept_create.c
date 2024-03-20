@@ -325,7 +325,12 @@ hook(long syscall_number,
 
 		debug_info("[bypass] << After creat....\n");
 		return ret;
-	} 
+	} else {
+    // Not a creat syscall. We must link with the standard library
+    *result = syscall_no_intercept(syscall_number, arg0, arg1);
+    return 0;
+  }
+  
 	return 1;
 }
 

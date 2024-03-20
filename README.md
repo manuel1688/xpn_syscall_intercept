@@ -18,11 +18,13 @@
 # la nueva libreria de intercepcion
 #TODO se debe remover todos los archivos de syscall_intercept.git ya que solo se usa para compilar
 #la nueva liberia
+#TODO mover el xpn_syscall_intercept_create.h a la carpeta include
+#TODO revisar los includes de xpn_syscall_intercept_create.h a ver si todo son necesarios para la 
+#nueva libreria
 8. bash makefile_scripts.sh
-9. make
 
 #xpn/test/integrity
-10. hace clone de test_xpn_syscall : https://github.com/manuel1688/test_xpn_syscall.git
-11. make
+9. hace clone de test_xpn_syscall : https://github.com/manuel1688/test_xpn_syscall.git
+10. make
 #para ejecutar las pruebas de la nueva liberia se usa el scrit:
-12. run_create_test.sh
+11. run_create_test.sh
