@@ -312,7 +312,44 @@ hook(long syscall_number,
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       *result = ret;
       return 0;
-		}
+		} else if (syscall_number == SYS_write){
+
+        //int fd, const void *buf, size_t nbyte 
+        int fd = (int)arg0;
+        const void *buf = (const void *)arg1;
+        size_t nbyte = (size_t)arg2;
+         
+        ssize_t ret = -1;
+        struct generic_fd virtual_fd = fdstable_get ( fd );
+        // This if checks if variable fd passed as argument is a expand fd.
+        if(virtual_fd.type == FD_XPN)
+        {
+          // We must initialize expand if it has not been initialized yet.
+          xpn_adaptor_keepInit ();
+          // It is an XPN partition, so we redirect the syscall to expand syscall
+          if (virtual_fd.is_file == 0)
+          {
+            debug_error("[bypass:%s:%d] Error: is not a file\n", __FILE__, __LINE__);
+            debug_info("[bypass] << After write...\n");
+            errno = EISDIR;
+            return -1;
+          }
+
+          debug_info("[bypass]\t try to xpn_write %d, %p, %ld\n", virtual_fd.real_fd, buf, nbyte);
+          ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
+          debug_info("[bypass]\t xpn_write %d, %p, %ld -> %ld\n", virtual_fd.real_fd, buf, nbyte, ret);
+        }
+        // Not an XPN partition. We must link with the standard library
+        else
+        {
+          debug_info("[bypass]\t try to dlsym_write %d,%p,%ld\n", fd, buf, nbyte);
+          ret = dlsym_write(fd, (void *)buf, nbyte);
+          debug_info("[bypass]\t dlsym_write %d,%p,%ld -> %ld\n", fd, buf, nbyte, ret);
+        }
+
+        debug_info("[bypass] << After write...\n");
+        return ret;
+    }
 		// Not an XPN partition. We must link with the standard library
 		else
 		{
