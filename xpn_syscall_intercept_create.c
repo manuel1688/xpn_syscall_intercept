@@ -312,7 +312,20 @@ hook(long syscall_number,
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       *result = ret;
       return 0;
-		} else if (syscall_number == SYS_write){
+		} 
+		// Not an XPN partition. We must link with the standard library
+		else
+		{
+			debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+			// ret = dlsym_creat(path, mode);
+			debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
+			*result = syscall_no_intercept(SYS_creat, arg0, arg1);
+			return 0;
+		}
+
+		debug_info("[bypass] << After creat....\n");
+		return ret;
+	} else if (syscall_number == SYS_write){
 
         //int fd, const void *buf, size_t nbyte 
         int fd = (int)arg0;
@@ -337,32 +350,23 @@ hook(long syscall_number,
 
           debug_info("[bypass]\t try to xpn_write %d, %p, %ld\n", virtual_fd.real_fd, buf, nbyte);
           ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
+          *result = ret;
           debug_info("[bypass]\t xpn_write %d, %p, %ld -> %ld\n", virtual_fd.real_fd, buf, nbyte, ret);
+          return 0;
         }
         // Not an XPN partition. We must link with the standard library
         else
         {
-          debug_info("[bypass]\t try to dlsym_write %d,%p,%ld\n", fd, buf, nbyte);
-          ret = dlsym_write(fd, (void *)buf, nbyte);
-          debug_info("[bypass]\t dlsym_write %d,%p,%ld -> %ld\n", fd, buf, nbyte, ret);
+          debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+          // ret = dlsym_creat(path, mode);
+          debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
+          *result = syscall_no_intercept(SYS_write, arg0, arg1);
+          return 0;
         }
 
         debug_info("[bypass] << After write...\n");
         return ret;
-    }
-		// Not an XPN partition. We must link with the standard library
-		else
-		{
-			debug_info("[bypass]\t try to dlsym_creat %s\n", path);
-			// ret = dlsym_creat(path, mode);
-			debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
-			*result = syscall_no_intercept(SYS_creat, arg0, arg1);
-			return 0;
-		}
-
-		debug_info("[bypass] << After creat....\n");
-		return ret;
-	} else {
+    }else {
     // Not a creat syscall. We must link with the standard library
     *result = syscall_no_intercept(syscall_number, arg0, arg1);
     return 0;
