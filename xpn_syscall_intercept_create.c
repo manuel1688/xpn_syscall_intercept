@@ -311,7 +311,7 @@ hook(long syscall_number,
 			ret = add_xpn_file_to_fdstable(fd);
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       *result = ret;
-      return 0;
+      return ret;
 		}
 		// Not an XPN partition. We must link with the standard library
 		else
