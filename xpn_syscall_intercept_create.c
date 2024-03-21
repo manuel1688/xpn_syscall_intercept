@@ -25,6 +25,30 @@ DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
 long   fdsdirtable_first_free = 0L;
 
+struct generic_fd fdstable_get ( int fd ) // esta funcion se encarga de obtener el descriptor de fichero correspondiente a un descriptor de fichero dado
+{
+  struct generic_fd ret;
+  
+  debug_info("[bypass] >> Before fdstable_get....\n");
+  debug_info("[bypass]    1) fd  => %d\n", fd);
+
+  if (fd >= PLUSXPN)
+  {
+    fd = fd - PLUSXPN;
+    ret = fdstable[fd];
+  }
+  else
+  {
+    ret.type = FD_SYS;
+    ret.real_fd = fd;
+  }
+
+  debug_info("[bypass]\t fdstable_get -> type: %d ; real_fd: %d\n", ret.type, ret.real_fd);
+  debug_info("[bypass] << After fdstable_get....\n");
+
+  return ret;
+}
+
 void fdsdirtable_realloc ( void )
 {
   long          old_size = fdsdirtable_size;
