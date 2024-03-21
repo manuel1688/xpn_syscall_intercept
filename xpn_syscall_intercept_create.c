@@ -25,30 +25,6 @@ DIR ** fdsdirtable = NULL;
 long   fdsdirtable_size = 0L;
 long   fdsdirtable_first_free = 0L;
 
-struct generic_fd fdstable_get ( int fd ) // esta funcion se encarga de obtener el descriptor de fichero correspondiente a un descriptor de fichero dado
-{
-  struct generic_fd ret;
-  
-  debug_info("[bypass] >> Before fdstable_get....\n");
-  debug_info("[bypass]    1) fd  => %d\n", fd);
-
-  if (fd >= PLUSXPN)
-  {
-    fd = fd - PLUSXPN;
-    ret = fdstable[fd];
-  }
-  else
-  {
-    ret.type = FD_SYS;
-    ret.real_fd = fd;
-  }
-
-  debug_info("[bypass]\t fdstable_get -> type: %d ; real_fd: %d\n", ret.type, ret.real_fd);
-  debug_info("[bypass] << After fdstable_get....\n");
-
-  return ret;
-}
-
 void fdsdirtable_realloc ( void )
 {
   long          old_size = fdsdirtable_size;
@@ -336,7 +312,7 @@ hook(long syscall_number,
 			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
       *result = ret;
       return 0;
-		} 
+		}
 		// Not an XPN partition. We must link with the standard library
 		else
 		{
@@ -349,48 +325,7 @@ hook(long syscall_number,
 
 		debug_info("[bypass] << After creat....\n");
 		return ret;
-	} else if (syscall_number == SYS_write){
-
-        //int fd, const void *buf, size_t nbyte 
-        int fd = (int)arg0;
-        const void *buf = (const void *)arg1;
-        size_t nbyte = (size_t)arg2;
-         
-        ssize_t ret = -1;
-        struct generic_fd virtual_fd = fdstable_get ( fd );
-        // This if checks if variable fd passed as argument is a expand fd.
-        if(virtual_fd.type == FD_XPN)
-        {
-          // We must initialize expand if it has not been initialized yet.
-          xpn_adaptor_keepInit ();
-          // It is an XPN partition, so we redirect the syscall to expand syscall
-          if (virtual_fd.is_file == 0)
-          {
-            debug_error("[bypass:%s:%d] Error: is not a file\n", __FILE__, __LINE__);
-            debug_info("[bypass] << After write...\n");
-            errno = EISDIR;
-            return -1;
-          }
-
-          debug_info("[bypass]\t try to xpn_write %d, %p, %ld\n", virtual_fd.real_fd, buf, nbyte);
-          ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
-          *result = ret;
-          debug_info("[bypass]\t xpn_write %d, %p, %ld -> %ld\n", virtual_fd.real_fd, buf, nbyte, ret);
-          return 0;
-        }
-        // Not an XPN partition. We must link with the standard library
-        else
-        {
-          debug_info("[bypass]\t try to dlsym_creat %s\n", path);
-          // ret = dlsym_creat(path, mode);
-          debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
-          *result = syscall_no_intercept(SYS_write, arg0, arg1);
-          return 0;
-        }
-
-        debug_info("[bypass] << After write...\n");
-        return ret;
-    }else {
+	} else {
     // Not a creat syscall. We must link with the standard library
     *result = syscall_no_intercept(syscall_number, arg0, arg1);
     return 0;
