@@ -60,8 +60,9 @@ void fdsdirtable_realloc ( void )
   debug_info("[bypass] << After fdsdirtable_realloc....\n");
 }
 
-int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar un descriptor de fichero en la tabla de descripto
-res de ficheros
+// esta funcion se encarga de insertar un descriptor de fichero 
+//en la tabla de descripto res de ficheros
+int fdstable_put ( struct generic_fd fd ) 
 {
   debug_info("[bypass] >> Before fdstable_put....\n");
 
