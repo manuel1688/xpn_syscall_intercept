@@ -46,14 +46,16 @@ void fdsdirtable_realloc ( void )
   if ( NULL == fdsdirtable )
   {
     debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
-    if (NULL != fdsdirtable_aux) {
+    if (NULL != fdsdirtable_aux) 
+    {
       free(fdsdirtable_aux);
     }
 
     exit(-1);
   }
   
-  for (int i = old_size; i < fdsdirtable_size; ++i) {
+  for (int i = old_size; i < fdsdirtable_size; ++i) 
+  {
     fdsdirtable[i] = NULL;
   }
 
@@ -68,13 +70,12 @@ int fdstable_put ( struct generic_fd fd )
 
   for (int i = fdstable_first_free; i < fdstable_size; ++i)
   {
-    if ( fdstable[i].type == FD_FREE ) {
+    if ( fdstable[i].type == FD_FREE ) 
+    {
       fdstable[i] = fd;
       fdstable_first_free = (long)(i + 1);
-
       debug_info("[bypass]\t fdstable_put -> fd %d ; type: %d ; real_fd: %d\n", i + PLUSXPN, fdstable[i].type, fdstable[i].real_fd);
       debug_info("[bypass] << After fdstable_put....\n");
-
       return i + PLUSXPN;
     }
   }
@@ -83,12 +84,11 @@ int fdstable_put ( struct generic_fd fd )
 
   fdstable_realloc();
 
-  if ( fdstable[old_size].type == FD_FREE ) {
+  if ( fdstable[old_size].type == FD_FREE ) 
+  {
     fdstable[old_size] = fd;
-
     debug_info("[bypass]\t fdstable_put -> fd %ld ; type: %d ; real_fd: %d\n", old_size + PLUSXPN, fdstable[old_size].type, fdstable[old_size].real_fd);
     debug_info("[bypass] << After fdstable_put....\n");
-
     return old_size + PLUSXPN;
   }
 
@@ -110,10 +110,10 @@ int add_xpn_file_to_fdstable ( int fd )
   int ret = fd; // valor de retorno
 
   // check arguments
-  if (fd < 0) {
+  if (fd < 0) 
+  {
     debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
     debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
-
     return ret;
   } 
 
@@ -137,9 +137,7 @@ int add_xpn_file_to_fdstable ( int fd )
 void fdsdirtable_init ( void )
 {
   debug_info("[bypass] >> Before fdsdirtable_init....\n");
-
   fdsdirtable_realloc();
-
   debug_info("[bypass] << After fdsdirtable_init....\n");
 }
 
@@ -164,7 +162,8 @@ void fdstable_realloc ( void )
   if ( NULL == fdstable )
   {
     debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
-    if (fdstable_aux != NULL) {
+    if (fdstable_aux != NULL) 
+    {
       free(fdstable_aux);
     }
 
@@ -184,9 +183,7 @@ void fdstable_realloc ( void )
 void fdstable_init ( void ) // esta funcion se encarga de inicializar la tabla de descriptores de ficheros
 {
   debug_info("[bypass] >> Before fdstable_init....\n");
-
   fdstable_realloc();
-
   debug_info("[bypass] << After fdstable_init....\n");
 }
 
@@ -202,7 +199,8 @@ int xpn_adaptor_keepInit ( void )
     xpn_adaptor_initCalled_env = getenv("INITCALLED");
     xpn_adaptor_initCalled     = 0;
 
-    if (xpn_adaptor_initCalled_env != NULL) {
+    if (xpn_adaptor_initCalled_env != NULL) 
+    {
       xpn_adaptor_initCalled = atoi(xpn_adaptor_initCalled_env);
     }
 
@@ -324,7 +322,12 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     debug_info("[bypass] << After creat....\n");
     return ret;
-  } 
+  }
+  // else if(syscall_number == SYS_write)
+  // {
+  //   *result = syscall_no_intercept(SYS_write, arg0, arg1, arg2);
+  //   return 0;
+  // } 
   return 1;
 }
 
