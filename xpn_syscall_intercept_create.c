@@ -60,7 +60,8 @@ void fdsdirtable_realloc ( void )
   debug_info("[bypass] << After fdsdirtable_realloc....\n");
 }
 
-int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar un descriptor de fichero en la tabla de descriptores de ficheros
+int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar un descriptor de fichero en la tabla de descripto
+res de ficheros
 {
   debug_info("[bypass] >> Before fdstable_put....\n");
 
@@ -95,8 +96,9 @@ int fdstable_put ( struct generic_fd fd ) // esta funcion se encarga de insertar
 
   return -1;
 }
-
-int add_xpn_file_to_fdstable ( int fd ) // esta funcion se encarga de añadir un descriptor de fichero correspondiente a un fichero de XPN en la tabla de descriptores de ficheros
+// esta funcion se encarga de añadir un descriptor de fichero correspondiente 
+//a un fichero de XPN en la tabla de descriptores de ficheros
+int add_xpn_file_to_fdstable ( int fd ) 
 {
   struct stat st; // estructura que almacena la informacion de un fichero
   struct generic_fd virtual_fd; // descriptor de fichero generico
@@ -281,63 +283,61 @@ const char * skip_xpn_prefix ( const char * path )
 
 static int
 hook(long syscall_number,
-			long arg0, long arg1,
-			long arg2, long arg3,
-			long arg4, long arg5,
-			long *result)
+                        long arg0, long arg1,
+                        long arg2, long arg3,
+                        long arg4, long arg5,
+                        long *result)
 {
-	(void) arg2;
-	(void) arg3;
-	(void) arg4;
-	(void) arg5;
+        (void) arg2;
+        (void) arg3;
+        (void) arg4;
+        (void) arg5;
 
-	// fd1 = creat(argv[1], 00777);
-	if (syscall_number == SYS_creat) {
+        // fd1 = creat(argv[1], 00777);
+        if (syscall_number == SYS_creat) {
 
-    // Se inicia el puntero que almacena el path
-		char *path = (char *)arg0;
-    // mode almacenara el valor de arg1 que es el modo de apertura del fichero
-		mode_t mode = (mode_t)arg1; 
-		int fd,ret;
-		debug_info("[bypass] >> Before creat....\n");
-		if (is_xpn_prefix(path))
-		{
-			// We must initialize expand if it has not been initialized yet.
-			xpn_adaptor_keepInit ();
-			// It is an XPN partition, so we redirect the syscall to expand syscall
-			debug_info("[bypass]\t try to creat %s", skip_xpn_prefix(path));
+                /*
+                  el path es /tmp/expand/P1/demo.txt
+                  luego se almacena en un puntero de tipo char
+                */
+                char *path = (char *)arg0;
+                mode_t mode = (mode_t)arg1; 
+                int fd,ret;
+                debug_info("[bypass] >> Before creat....\n");
+                if (is_xpn_prefix(path))
+                {
+                        // We must initialize expand if it has not been initialized yet.
+                        xpn_adaptor_keepInit ();
+                        // It is an XPN partition, so we redirect the syscall to expand syscall
+                        debug_info("[bypass]\t try to creat %s", skip_xpn_prefix(path));
 
-			fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
-			ret = add_xpn_file_to_fdstable(fd);
-			debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
-      *result = ret;
-      return ret;
-		}
-		// Not an XPN partition. We must link with the standard library
-		else
-		{
-			debug_info("[bypass]\t try to dlsym_creat %s\n", path);
-			// ret = dlsym_creat(path, mode);
-			debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
-			*result = syscall_no_intercept(SYS_creat, arg0, arg1);
-			return 0;
-		}
+                        fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
+                        ret = add_xpn_file_to_fdstable(fd);
+                        printf("ret: %d\n", ret);
+                        debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
+                        printf("fd: %d\n", fd);
+                        *result = ret;
+                        return 0;
+                }
+                // Not an XPN partition. We must link with the standard library
+                else
+                {
+                      debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+                      // ret = dlsym_creat(path, mode);
+                      debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
+                      *result = syscall_no_intercept(SYS_creat, arg0, arg1);
+                      return 0;
+                }
 
-		debug_info("[bypass] << After creat....\n");
-		return ret;
-	} else {
-    // Not a creat syscall. We must link with the standard library
-    *result = syscall_no_intercept(syscall_number, arg0, arg1);
-    return 0;
-  }
-  
-	return 1;
+                debug_info("[bypass] << After creat....\n");
+                return ret;
+        } 
+
+        return 1;
 }
 
 static __attribute__((constructor)) void
 init(void)
 {
-	intercept_hook_point = hook;
+        intercept_hook_point = hook;
 }
- 
-
