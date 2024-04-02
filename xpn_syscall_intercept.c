@@ -298,7 +298,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     debug_info("[bypass] >> Before creat....\n");
     if (is_xpn_prefix(path))
     {
-        print("is_xpn_prefix\n");
+        printf("is_xpn_prefix\n");
         // We must initialize expand if it has not been initialized yet.
         xpn_adaptor_keepInit ();
         // It is an XPN partition, so we redirect the syscall to expand syscall
@@ -314,7 +314,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     else
     {
-      print("not is_xpn_prefix\n");
+      printf("not is_xpn_prefix\n");
       // Not an XPN partition. We must link with the standard library
       debug_info("[bypass]\t try to dlsym_creat %s\n", path);
       // ret = dlsym_creat(path, mode);
