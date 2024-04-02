@@ -280,6 +280,30 @@ const char * skip_xpn_prefix ( const char * path )
   return (const char *)(path + strlen(xpn_adaptor_partition_prefix));
 }
 
+struct generic_fd fdstable_get ( int fd ) // esta funcion se encarga de obtener el descriptor de fichero correspondiente a un descriptor de fichero dado
+{
+  struct generic_fd ret;
+  
+  debug_info("[bypass] >> Before fdstable_get....\n");
+  debug_info("[bypass]    1) fd  => %d\n", fd);
+
+  if (fd >= PLUSXPN)
+  {
+    fd = fd - PLUSXPN;
+    ret = fdstable[fd];
+  }
+  else
+  {
+    ret.type = FD_SYS;
+    ret.real_fd = fd;
+  }
+
+  debug_info("[bypass]\t fdstable_get -> type: %d ; real_fd: %d\n", ret.type, ret.real_fd);
+  debug_info("[bypass] << After fdstable_get....\n");
+
+  return ret;
+}
+
 static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,long arg4, long arg5,long *result){
   
   (void) arg2;
