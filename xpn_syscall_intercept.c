@@ -295,7 +295,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
     int fd,ret;
-    debug_info("[bypass] >> Before creat....\n");
+    
     if (is_xpn_prefix(path))
     {
       print("is_xpn_prefix\n");
