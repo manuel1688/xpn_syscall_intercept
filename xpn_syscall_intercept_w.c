@@ -330,6 +330,9 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     //ret = write(fd1, buffer, BUFF_SIZE);
     ssize_t ret = -1;
     int fd = (int)arg0;
+    const void *buf = (const void *)arg1;
+    size_t nbyte = (size_t)arg2;
+    
     struct generic_fd virtual_fd = fdstable_get(fd);
 
     // This if checks if variable fd passed as argument is a expand fd.
