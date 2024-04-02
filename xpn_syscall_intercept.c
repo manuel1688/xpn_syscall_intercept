@@ -295,29 +295,39 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
     int fd,ret;
-    
+    debug_info("[bypass] >> Before creat....\n");
     if (is_xpn_prefix(path))
     {
-      print("is_xpn_prefix\n");
-      // We must initialize expand if it has not been initialized yet.
-      xpn_adaptor_keepInit ();
-      // It is an XPN partition, so we redirect the syscall to expand syscall
-      fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
-      ret = add_xpn_file_to_fdstable(fd);
-      printf("ret: %d\n", ret);
-      printf("fd: %d\n", fd);
-      *result = ret;
-      return 0;
+        // We must initialize expand if it has not been initialized yet.
+        xpn_adaptor_keepInit ();
+        // It is an XPN partition, so we redirect the syscall to expand syscall
+        debug_info("[bypass]\t try to creat %s", skip_xpn_prefix(path));
+
+        fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
+        ret = add_xpn_file_to_fdstable(fd);
+        printf("ret: %d\n", ret);
+        debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
+        printf("fd: %d\n", fd);
+        *result = ret;
+        return 0;
     }
     else
     {
-      print("not is_xpn_prefix\n")
+      // Not an XPN partition. We must link with the standard library
+      debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+      // ret = dlsym_creat(path, mode);
+      debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
       *result = syscall_no_intercept(SYS_creat, arg0, arg1);
       return 0;
     }
     debug_info("[bypass] << After creat....\n");
     return ret;
   }
+  // else if(syscall_number == SYS_write)
+  // {
+  //   *result = syscall_no_intercept(SYS_write, arg0, arg1, arg2);
+  //   return 0;
+  // } 
   return 1;
 }
 
