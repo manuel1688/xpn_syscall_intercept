@@ -62,6 +62,8 @@ void fdsdirtable_realloc ( void )
   debug_info("[bypass] << After fdsdirtable_realloc....\n");
 }
 
+// esta funcion se encarga de insertar un descriptor de fichero 
+//en la tabla de descripto res de ficheros
 int fdstable_put ( struct generic_fd fd ) 
 {
   debug_info("[bypass] >> Before fdstable_put....\n");
@@ -95,7 +97,8 @@ int fdstable_put ( struct generic_fd fd )
 
   return -1;
 }
-
+// esta funcion se encarga de añadir un descriptor de fichero correspondiente 
+//a un fichero de XPN en la tabla de descriptores de ficheros
 int add_xpn_file_to_fdstable ( int fd ) 
 {
   struct stat st; // estructura que almacena la informacion de un fichero
@@ -106,6 +109,7 @@ int add_xpn_file_to_fdstable ( int fd )
 
   int ret = fd; // valor de retorno
 
+  // check arguments
   if (fd < 0) 
   {
     debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
@@ -113,12 +117,15 @@ int add_xpn_file_to_fdstable ( int fd )
     return ret;
   } 
 
+  // fstat(fd...
   xpn_fstat(fd, &st); // obtiene la informacion del fichero correspondiente al descriptor de fichero fd
 
+  // setup virtual_fd
   virtual_fd.type    = FD_XPN;
   virtual_fd.real_fd = fd;
   virtual_fd.is_file = (S_ISDIR(st.st_mode)) ? 0 : 1;
 
+  // insert into fdstable
   ret = fdstable_put ( virtual_fd );
 
   debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
@@ -202,6 +209,7 @@ int xpn_adaptor_keepInit ( void )
   
   ret = 0; 
 
+  // If expand has not been initialized, then initialize it.
   if (0 == xpn_adaptor_initCalled)
   {
     xpn_adaptor_initCalled = 1; //TODO: Delete
@@ -234,8 +242,10 @@ int xpn_adaptor_keepInit ( void )
   return ret;
 }
 
+// valida si el path contiene el prefijo de XPN 
 int is_xpn_prefix   ( const char * path ) 
 {
+  // Si el prefijo de XPN no ha sido verificado, entonces se verifica
   if (0 == xpn_prefix_change_verified)
   {
     xpn_prefix_change_verified = 1;
@@ -247,12 +257,26 @@ int is_xpn_prefix   ( const char * path )
     }
   }
   
+  // el xpn_adaptor_partition_prefix se almacena en un puntero de tipo char llama prefix
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
+
+  // el valor de prefix es /tmp/expand/
+  // el valor de path es /tmp/expand/P1/demo.txt
+  // se compara hasta el tamaño de prefix que es 12
   return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix) );
 }
 
+/*
+  Esta funcion se encarga de saltar el prefijo de XPN con el fin de obtener 
+  el path real para el sistema de archivos que se esta utilizando
+*/
 const char * skip_xpn_prefix ( const char * path ) 
 {
+  /*
+    El valor de path es un puntero de tipo char que almacena /tmp/expand/P1/demo.txt
+    luego se le suma el tamaño de xpn_adaptor_partition_prefix que es 12
+    como resultado es un puntero de tipo char que almacena P1/demo.txt
+  */
   return (const char *)(path + strlen(xpn_adaptor_partition_prefix));
 }
 
@@ -290,46 +314,65 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
   if (syscall_number == SYS_creat){
 
+    /*
+      el path es /tmp/expand/P1/demo.txt
+      luego se almacena en un puntero de tipo char
+    */
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
     
+    debug_info("[bypass] >> Before creat....\n");
     if (is_xpn_prefix(path))
     {
+        // We must initialize expand if it has not been initialized yet.
         xpn_adaptor_keepInit ();
+        // It is an XPN partition, so we redirect the syscall to expand syscall
+        debug_info("[bypass]\t try to creat %s", skip_xpn_prefix(path));
+
         fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
         ret = add_xpn_file_to_fdstable(fd);
         printf("ret: %d\n", ret);
+        debug_info("[bypass]\t creat %s -> %d", skip_xpn_prefix(path), ret);
         printf("fd: %d\n", fd);
         *result = ret;
         return 0;
     }
     else
     {
+      // Not an XPN partition. We must link with the standard library
+      debug_info("[bypass]\t try to dlsym_creat %s\n", path);
+      // ret = dlsym_creat(path, mode);
+      debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
       *result = syscall_no_intercept(SYS_creat, arg0, arg1);
       return 0;
     }
+    debug_info("[bypass] << After creat....\n");
     return ret;
   }
   else if(syscall_number == SYS_write)
   {
+    //ret = write(fd1, buffer, BUFF_SIZE);
     ssize_t ret = -1;
     int fd = (int)arg0;
-    printf("SYS_write");
-    printf("fd: %d\n", fd);
     const void *buf = (const void *)arg1;
     size_t nbyte = (size_t)arg2;
+    
     struct generic_fd virtual_fd = fdstable_get(fd);
 
+    // This if checks if variable fd passed as argument is a expand fd.
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit();
+
       if (virtual_fd.is_file == 0)
       {
         errno = EISDIR;
         return -1;
       }
+
       ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
     }
+    // Not an XPN partition. We must link with the standard library
     else
     {
       *result = syscall_no_intercept(SYS_write, arg0, arg1, arg2);
@@ -337,23 +380,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return ret;
   } 
-  else if(syscall_number == SYS_close)
-  {
-    int fd = (int)arg0;
-    int ret = -1;
-    struct generic_fd virtual_fd = fdstable_get(fd);
-    if(virtual_fd.type == FD_XPN)
-    {
-      xpn_adaptor_keepInit();
-      ret = xpn_close(virtual_fd.real_fd);
-      fdstable_remove(fd);
-    }
-    else
-    {
-      *result = syscall_no_intercept(SYS_close, arg0);
-      return 0;
-    }
-  }
   return 1;
 }
 
