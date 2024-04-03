@@ -304,6 +304,31 @@ struct generic_fd fdstable_get ( int fd ) // esta funcion se encarga de obtener 
   return ret;
 }
 
+int fdstable_remove ( int fd )
+{
+  debug_info("[bypass] >> Before fdstable_remove....\n");
+  debug_info("[bypass]    1) fd  => %d\n", fd);
+
+  if (fd < PLUSXPN) {
+    debug_info("[bypass] << After fdstable_remove....\n");
+
+    return 0;
+  }
+
+  fd = fd - PLUSXPN;
+  fdstable[fd].type    = FD_FREE;
+  fdstable[fd].real_fd = -1;
+  fdstable[fd].is_file = -1;
+
+  if (fd < fdstable_first_free) {
+    fdstable_first_free = fd;
+  }
+
+  debug_info("[bypass] << After fdstable_remove....\n");
+
+  return 0;
+}
+
 static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,long arg4, long arg5,long *result){
   
   (void) arg2;
