@@ -381,8 +381,27 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       return 0;
     }
     return ret;
-  } 
-  
+  }
+  else if (syscall_number == SYS_close)
+  {
+    int ret = -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      ret = xpn_close(virtual_fd.real_fd);
+      fdstable_remove(fd);
+      *result = ret;
+      return 0;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_close, arg0);
+      return 0;
+    }
+    return ret;
+  }
   return 1;
 }
 
