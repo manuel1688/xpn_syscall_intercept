@@ -371,6 +371,8 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       }
 
       ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
+      *result = ret;
+      return 0;
     }
     // Not an XPN partition. We must link with the standard library
     else
