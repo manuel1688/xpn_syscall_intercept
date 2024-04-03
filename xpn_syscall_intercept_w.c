@@ -382,6 +382,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return ret;
   } 
+  printf("syscall_number: %ld\n", syscall_number);
   return 1;
 }
 
