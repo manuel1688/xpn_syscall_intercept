@@ -311,7 +311,6 @@ int fdstable_remove ( int fd )
 
   if (fd < PLUSXPN) {
     debug_info("[bypass] << After fdstable_remove....\n");
-
     return 0;
   }
 
@@ -339,10 +338,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
   if (syscall_number == SYS_creat){
 
-    /*
-      el path es /tmp/expand/P1/demo.txt
-      luego se almacena en un puntero de tipo char
-    */
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
     
@@ -364,10 +359,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     else
     {
-      // Not an XPN partition. We must link with the standard library
-      debug_info("[bypass]\t try to dlsym_creat %s\n", path);
-      // ret = dlsym_creat(path, mode);
-      debug_info("[bypass]\t dlsym_creat %s -> %d\n", path, ret);
       *result = syscall_no_intercept(SYS_creat, arg0, arg1);
       return 0;
     }
