@@ -315,14 +315,12 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
         ret = add_xpn_file_to_fdstable(fd);
         *result = ret;
-        return 0;
     }
     else
     {
       *result = syscall_no_intercept(SYS_creat, arg0, arg1);
-      return 0;
     }
-    return ret;
+    return 0;
   }
   else if(syscall_number == SYS_write)
   {
@@ -341,17 +339,14 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         errno = EISDIR;
         return -1;
       }
-
       ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
       *result = ret;
-      return 0;
     }
     else
     {
       *result = syscall_no_intercept(SYS_write, arg0, arg1, arg2);
-      return 0;
     }
-    return ret;
+    return 0;
   }
   else if (syscall_number == SYS_close)
   {
@@ -365,15 +360,67 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       ret = xpn_close(virtual_fd.real_fd);
       fdstable_remove(fd);
       *result = ret;
-      return 0;
     }
     else
     {
       *result = syscall_no_intercept(SYS_close, arg0);
-      return 0;
     }
-    return ret;
+    return 0;
   }
+  else if(syscall_number  == SYS_open)
+  {
+    char *path = (char *)arg0;
+    int flags = (int)arg1;
+    int ret, fd;
+    va_list ap;
+    mode_t mode = 0;
+    va_start(ap, flags);
+    mode = va_arg(ap, mode_t);
+
+    if (is_xpn_prefix(path))
+    {
+      xpn_adaptor_keepInit ();
+      if (mode != 0) {
+        fd = xpn_open(skip_xpn_prefix(path), flags, mode);
+      }
+      else {
+        fd = xpn_open(skip_xpn_prefix(path), flags);
+      }
+      ret = add_xpn_file_to_fdstable(fd);
+      *result = ret;
+    }
+    else 
+    {
+      *result = syscall_no_intercept(SYS_open, arg0, arg1, arg2);
+    }
+    va_end(ap);
+    return 0;
+  }
+  else if(syscall_number == SYS_read)
+  {
+    int fd = (int)arg0;
+    void *buf = (void *)arg1;
+    size_t nbyte = (size_t)arg2;
+    ssize_t ret = -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      if (virtual_fd.is_file == 0)
+      {
+        errno = EISDIR;
+        return -1;
+      }
+      ret = xpn_read(virtual_fd.real_fd, buf, nbyte);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_read, arg0, arg1, arg2);
+    }
+    return 0;
+  }
+  
   return 1;
 }
 
