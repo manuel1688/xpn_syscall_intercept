@@ -296,6 +296,15 @@ int fdstable_remove ( int fd )
   return 0;
 }
 
+ssize_t xpn_read  ( int fd, void *buffer, size_t size )
+{
+  ssize_t ret = -1 ;
+
+  ret = xpn_simple_read(fd, buffer, size) ;
+
+  return ret ;
+}
+
 static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,long arg4, long arg5,long *result){
   
   (void) arg2;
