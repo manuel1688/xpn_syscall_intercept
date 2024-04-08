@@ -313,6 +313,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         xpn_adaptor_keepInit ();
         fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
         ret = add_xpn_file_to_fdstable(fd);
+        printf("xpn_creat(%s, %o) -> %d\n", skip_xpn_prefix(path), mode, ret);
         *result = ret;
     }
     else
