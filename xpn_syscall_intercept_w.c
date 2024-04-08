@@ -303,7 +303,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   (void) arg4;
   (void) arg5;
   int fd,ret;
-  printf("syscall_number: %ld\n", syscall_number);
 
   if (syscall_number == SYS_creat){
     char *path = (char *)arg0;
