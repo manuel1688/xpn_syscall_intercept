@@ -372,7 +372,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number  == SYS_open)
+  else if (syscall_number  == SYS_open)
   {
     
     //TODO: agregar soporte para el modo
