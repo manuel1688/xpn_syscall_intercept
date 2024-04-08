@@ -307,7 +307,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   if (syscall_number == SYS_creat){
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
-    
+    printf("CREAT");
     if (is_xpn_prefix(path))
     {
         xpn_adaptor_keepInit ();
@@ -324,6 +324,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_write)
   {
+    printf("WRITE");
     ssize_t ret = -1;
     int fd = (int)arg0;
     const void *buf = (const void *)arg1;
@@ -351,6 +352,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if (syscall_number == SYS_close)
   {
+    printf("CLOSE");
     int ret = -1;
     int fd = (int)arg0;
     struct generic_fd virtual_fd = fdstable_get(fd);
