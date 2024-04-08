@@ -329,11 +329,10 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     const void *buf = (const void *)arg1;
     size_t nbyte = (size_t)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    
+    printf("fd: %d\n", fd); 
 
     if(virtual_fd.type == FD_XPN)
     {
-      printf("WRITE");
       xpn_adaptor_keepInit();
 
       if (virtual_fd.is_file == 0)
