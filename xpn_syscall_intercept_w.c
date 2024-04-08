@@ -324,12 +324,13 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_write)
   {
-    printf("WRITE");
+    
     ssize_t ret = -1;
     int fd = (int)arg0;
     const void *buf = (const void *)arg1;
     size_t nbyte = (size_t)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
+    printf("WRITE");
 
     if(virtual_fd.type == FD_XPN)
     {
@@ -352,10 +353,10 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if (syscall_number == SYS_close)
   {
-    printf("CLOSE");
     int ret = -1;
     int fd = (int)arg0;
     struct generic_fd virtual_fd = fdstable_get(fd);
+    printf("CLOSE");
 
     if(virtual_fd.type == FD_XPN)
     {
