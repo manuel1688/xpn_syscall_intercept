@@ -374,13 +374,9 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if (syscall_number  == SYS_open)
   {
-    
     //TODO: agregar soporte para el modo
     char *path = (char *)arg0;
-    
     int flags = (int)arg1;
-    ret = -1;
-    fd = -1;
 
     printf("flags: %d\n", flags);
 
