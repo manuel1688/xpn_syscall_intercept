@@ -375,9 +375,12 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     int flags = (int)arg1;
     int ret, fd;
 
+    printf("flags: %d\n", flags);
+
     if (is_xpn_prefix(path))
     {
-      xpn_adaptor_keepInit ();
+      printf("is_xpn_prefix\n");
+      xpn_adaptor_keepInit();
       fd = xpn_open(skip_xpn_prefix(path), flags);
       ret = add_xpn_file_to_fdstable(fd);
       *result = ret;
