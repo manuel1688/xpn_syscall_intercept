@@ -339,6 +339,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         return -1;
       }
       ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
+      printf("xpn_write(%d, %p, %lu) -> %ld\n", virtual_fd.real_fd, buf, nbyte, ret);
       *result = ret;
     }
     else
@@ -358,6 +359,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       xpn_adaptor_keepInit ();
       ret = xpn_close(virtual_fd.real_fd);
       fdstable_remove(fd);
+      printf("fdstable_remove(%d)\n", fd);
       *result = ret;
     }
     else
