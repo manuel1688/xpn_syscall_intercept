@@ -372,32 +372,32 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  // else if(syscall_number  == SYS_open)
-  // {
-  //   printf("SYS_open\n");
-  //   //TODO: agregar soporte para el modo
-  //   char *path = (char *)arg0;
-  //   printf("path: %s\n", path);
-  //   int flags = (int)arg1;
-  //   ret = -1;
-  //   fd = -1;
+  else if(syscall_number  == SYS_open)
+  {
+    
+    //TODO: agregar soporte para el modo
+    char *path = (char *)arg0;
+    
+    int flags = (int)arg1;
+    ret = -1;
+    fd = -1;
 
-  //   printf("flags: %d\n", flags);
+    printf("flags: %d\n", flags);
 
-  //   if (is_xpn_prefix(path))
-  //   {
-  //     printf("is_xpn_prefix\n");
-  //     xpn_adaptor_keepInit();
-  //     fd = xpn_open(skip_xpn_prefix(path), flags);
-  //     ret = add_xpn_file_to_fdstable(fd);
-  //     *result = ret;
-  //   }
-  //   else 
-  //   {
-  //     *result = syscall_no_intercept(SYS_open, arg0, arg1);
-  //   }
-  //   return 0;
-  // }
+    if (is_xpn_prefix(path))
+    {
+      printf("is_xpn_prefix\n");
+      xpn_adaptor_keepInit();
+      fd = xpn_open(skip_xpn_prefix(path), flags);
+      ret = add_xpn_file_to_fdstable(fd);
+      *result = ret;
+    }
+    else 
+    {
+      *result = syscall_no_intercept(SYS_open, arg0, arg1);
+    }
+    return 0;
+  }
   // else if(syscall_number == SYS_read)
   // {
   //   printf("SYS_read\n");
