@@ -305,7 +305,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   int fd,ret;
 
   if (syscall_number == SYS_creat){
-    printf("SYS_creat\n")
+    printf("SYS_creat\n");
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
     
@@ -324,7 +324,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_write)
   {
-    printf("SYS_write\n")
+    printf("SYS_write\n");
     ssize_t ret = -1;
     int fd = (int)arg0;
     const void *buf = (const void *)arg1;
@@ -351,7 +351,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if (syscall_number == SYS_close)
   {
-    printf("SYS_close\n")
+    printf("SYS_close\n");
     int ret = -1;
     int fd = (int)arg0;
     struct generic_fd virtual_fd = fdstable_get(fd);
@@ -371,7 +371,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number  == SYS_open)
   {
-    printf("SYS_open\n")
+    printf("SYS_open\n");
     //TODO: agregar soporte para el modo
     char *path = (char *)arg0;
     printf("path: %s\n", path);
@@ -396,7 +396,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_read)
   {
-    printf("SYS_read\n")
+    printf("SYS_read\n");
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t nbyte = (size_t)arg2;
