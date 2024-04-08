@@ -376,7 +376,8 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg0;
     printf("path: %s\n", path);
     int flags = (int)arg1;
-    int ret, fd;
+    ret = -1;
+    fd = -1;
 
     printf("flags: %d\n", flags);
 
