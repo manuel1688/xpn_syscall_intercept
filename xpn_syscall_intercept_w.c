@@ -378,32 +378,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number  == SYS_open)
   {
+    //TODO: agregar soporte para el modo
     char *path = (char *)arg0;
     printf("path: %s\n", path);
     int flags = (int)arg1;
     int ret, fd;
-    va_list ap;
-    mode_t mode = 0;
-    va_start(ap, flags);
-    mode = va_arg(ap, mode_t);
 
     if (is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit ();
-      if (mode != 0) {
-        fd = xpn_open(skip_xpn_prefix(path), flags, mode);
-      }
-      else {
-        fd = xpn_open(skip_xpn_prefix(path), flags);
-      }
+      fd = xpn_open(skip_xpn_prefix(path), flags);
       ret = add_xpn_file_to_fdstable(fd);
       *result = ret;
     }
     else 
     {
-      *result = syscall_no_intercept(SYS_open, arg0, arg1, arg2);
+      *result = syscall_no_intercept(SYS_open, arg0, arg1);
     }
-    va_end(ap);
     return 0;
   }
   else if(syscall_number == SYS_read)
