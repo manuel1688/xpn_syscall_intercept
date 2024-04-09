@@ -375,20 +375,20 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   else if (syscall_number == SYS_openat)
   {
     //TODO: agregar soporte para el modo
-    char *path = (char *)arg0;
-    int flags = (int)arg1;
+    // char *path = (char *)arg0;
+    // int flags = (int)arg1;
 
-    if (is_xpn_prefix(path))
-    {
-      xpn_adaptor_keepInit();
-      fd = xpn_open(skip_xpn_prefix(path), flags);
-      ret = add_xpn_file_to_fdstable(fd);
-      *result = ret;
-    }
-    else 
-    {
-      *result = syscall_no_intercept(SYS_open, arg0, arg1);
-    }
+    // if (is_xpn_prefix(path))
+    // {
+    //   xpn_adaptor_keepInit();
+    //   fd = xpn_open(skip_xpn_prefix(path), flags);
+    //   ret = add_xpn_file_to_fdstable(fd);
+    //   *result = ret;
+    // }
+    // else 
+    // {
+      *result = syscall_no_intercept(SYS_openat, arg0, arg1, arg2);
+    // }
     return 0;
   }
   // else if(syscall_number == SYS_read)
