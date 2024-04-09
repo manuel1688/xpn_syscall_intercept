@@ -372,14 +372,11 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number  == SYS_open || syscall_number == SYS_openat)
+  else if (syscall_number  == SYS_open)
   {
     //TODO: agregar soporte para el modo
     char *path = (char *)arg0;
     int flags = (int)arg1;
-
-    printf("flags: %d\n", flags);
-    printf("path: %s\n", path);
 
     if (is_xpn_prefix(path))
     {
