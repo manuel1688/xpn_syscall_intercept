@@ -392,31 +392,31 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  // else if(syscall_number == SYS_read)
-  // {
-  //   printf("SYS_read\n");
-  //   int fd = (int)arg0;
-  //   void *buf = (void *)arg1;
-  //   size_t nbyte = (size_t)arg2;
-  //   ssize_t ret = -1;
-  //   struct generic_fd virtual_fd = fdstable_get(fd);
-  //   if(virtual_fd.type == FD_XPN)
-  //   {
-  //     xpn_adaptor_keepInit ();
-  //     if (virtual_fd.is_file == 0)
-  //     {
-  //       errno = EISDIR;
-  //       return -1;
-  //     }
-  //     ret = xpn_read(virtual_fd.real_fd, buf, nbyte);
-  //     *result = ret;
-  //   }
-  //   else
-  //   {
-  //     *result = syscall_no_intercept(SYS_read, arg0, arg1, arg2);
-  //   }
-  //   return 0;
-  // }
+  else if(syscall_number == SYS_read)
+  {
+    printf("SYS_read\n");
+    int fd = (int)arg0;
+    void *buf = (void *)arg1;
+    size_t nbyte = (size_t)arg2;
+    ssize_t ret = -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      if (virtual_fd.is_file == 0)
+      {
+        errno = EISDIR;
+        return -1;
+      }
+      ret = xpn_read(virtual_fd.real_fd, buf, nbyte);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_read, arg0, arg1, arg2);
+    }
+    return 0;
+  }
   
   return 1;
 }
