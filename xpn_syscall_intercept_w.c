@@ -26,10 +26,8 @@ long   fdsdirtable_first_free = 0L;
 
 void fdsdirtable_realloc ( void )
 {
-  long          old_size = fdsdirtable_size;
+  long old_size = fdsdirtable_size;
   DIR ** fdsdirtable_aux = fdsdirtable;
-  
-  debug_info("[bypass] >> Before fdsdirtable_realloc....\n");
   
   if ( NULL == fdsdirtable )
   {
@@ -42,14 +40,12 @@ void fdsdirtable_realloc ( void )
     fdsdirtable = (DIR **) realloc((DIR **)fdsdirtable, fdsdirtable_size * sizeof(DIR *));
   }
 
-  if ( NULL == fdsdirtable )
+  if(NULL == fdsdirtable)
   {
-    debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
     if (NULL != fdsdirtable_aux) 
     {
       free(fdsdirtable_aux);
     }
-
     exit(-1);
   }
   
@@ -58,20 +54,15 @@ void fdsdirtable_realloc ( void )
     fdsdirtable[i] = NULL;
   }
 
-  debug_info("[bypass] << After fdsdirtable_realloc....\n");
 }
-int fdstable_put ( struct generic_fd fd ) 
+int fdstable_put(struct generic_fd fd) 
 {
-  debug_info("[bypass] >> Before fdstable_put....\n");
-
-  for (int i = fdstable_first_free; i < fdstable_size; ++i)
+  for(int i = fdstable_first_free; i < fdstable_size; ++i)
   {
-    if ( fdstable[i].type == FD_FREE ) 
+    if(fdstable[i].type == FD_FREE) 
     {
       fdstable[i] = fd;
       fdstable_first_free = (long)(i + 1);
-      debug_info("[bypass]\t fdstable_put -> fd %d ; type: %d ; real_fd: %d\n", i + PLUSXPN, fdstable[i].type, fdstable[i].real_fd);
-      debug_info("[bypass] << After fdstable_put....\n");
       return i + PLUSXPN;
     }
   }
@@ -80,34 +71,23 @@ int fdstable_put ( struct generic_fd fd )
 
   fdstable_realloc();
 
-  if ( fdstable[old_size].type == FD_FREE ) 
+  if(fdstable[old_size].type == FD_FREE) 
   {
     fdstable[old_size] = fd;
-    debug_info("[bypass]\t fdstable_put -> fd %ld ; type: %d ; real_fd: %d\n", old_size + PLUSXPN, fdstable[old_size].type, fdstable[old_size].real_fd);
-    debug_info("[bypass] << After fdstable_put....\n");
     return old_size + PLUSXPN;
   }
-
-  debug_info("[bypass]\t fdstable_put -> -1\n");
-  debug_info("[bypass] << After fdstable_put....\n");
 
   return -1;
 }
 
-int add_xpn_file_to_fdstable ( int fd ) 
+int add_xpn_file_to_fdstable(int fd) 
 {
   struct stat st; 
   struct generic_fd virtual_fd; 
   
-  debug_info("[bypass] >> Before add_xpn_file_to_fdstable....\n");
-  debug_info("[bypass]    1) fd  => %d\n", fd);
-
   int ret = fd; 
-
   if (fd < 0) 
   {
-    debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
-    debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
     return ret;
   } 
 
@@ -116,28 +96,19 @@ int add_xpn_file_to_fdstable ( int fd )
   virtual_fd.type    = FD_XPN;
   virtual_fd.real_fd = fd;
   virtual_fd.is_file = (S_ISDIR(st.st_mode)) ? 0 : 1;
-
   ret = fdstable_put ( virtual_fd );
-
-  debug_info("[bypass]\t add_xpn_file_to_fdstable -> %d\n", ret);
-  debug_info("[bypass] << After add_xpn_file_to_fdstable....\n");
-
   return ret;
 }
 
-void fdsdirtable_init ( void )
+void fdsdirtable_init(void)
 {
-  debug_info("[bypass] >> Before fdsdirtable_init....\n");
   fdsdirtable_realloc();
-  debug_info("[bypass] << After fdsdirtable_init....\n");
 }
 
-void fdstable_realloc ( void ) 
+void fdstable_realloc(void) 
 {
   long old_size = fdstable_size;
   struct generic_fd * fdstable_aux = fdstable;
-
-  debug_info("[bypass] >> Before fdstable_realloc....\n");
 
   if ( NULL == fdstable )
   {
@@ -152,12 +123,10 @@ void fdstable_realloc ( void )
 
   if ( NULL == fdstable )
   {
-    debug_error( "[bypass:%s:%d] Error: out of memory\n", __FILE__, __LINE__);
     if (fdstable_aux != NULL) 
     {
       free(fdstable_aux);
     }
-
     exit(-1);
   }
   
@@ -168,14 +137,11 @@ void fdstable_realloc ( void )
     fdstable[i].is_file = -1;
   }
 
-  debug_info("[bypass] << After fdstable_realloc....\n");
 }
 
 void fdstable_init ( void ) 
 {
-  debug_info("[bypass] >> Before fdstable_init....\n");
   fdstable_realloc();
-  debug_info("[bypass] << After fdstable_init....\n");
 }
 
 int xpn_adaptor_keepInit ( void )
@@ -183,8 +149,6 @@ int xpn_adaptor_keepInit ( void )
   int    ret;
   char * xpn_adaptor_initCalled_env = NULL;
   
-  debug_info("[bypass] >> Before xpn_adaptor_keepInit....\n");
-
   if (0 == xpn_adaptor_initCalled_getenv)
   {
     xpn_adaptor_initCalled_env = getenv("INITCALLED");
@@ -205,17 +169,12 @@ int xpn_adaptor_keepInit ( void )
     xpn_adaptor_initCalled = 1; 
     setenv("INITCALLED", "1", 1);
 
-    debug_info("[bypass]\t Before xpn_init()\n");
-
     fdstable_init ();
     fdsdirtable_init ();
     ret = xpn_init();
 
-    debug_info("[bypass]\t After xpn_init() -> %d\n", ret);
-
     if (ret < 0)
     {
-      debug_error( "ERROR: Expand xpn_init couldn't be initialized :-(\n");
       xpn_adaptor_initCalled = 0;
       setenv("INITCALLED", "0", 1);
     }
@@ -225,13 +184,10 @@ int xpn_adaptor_keepInit ( void )
       setenv("INITCALLED", "1", 1);
     }
   }
-
-  debug_info("[bypass]\t xpn_adaptor_keepInit -> %d\n", ret);
-  debug_info("[bypass] << After xpn_adaptor_keepInit....\n");
   return ret;
 }
 
-int is_xpn_prefix   ( const char * path ) 
+int is_xpn_prefix(const char * path) 
 {
   if (0 == xpn_prefix_change_verified)
   {
@@ -256,9 +212,6 @@ struct generic_fd fdstable_get ( int fd )
 {
   struct generic_fd ret;
   
-  debug_info("[bypass] >> Before fdstable_get....\n");
-  debug_info("[bypass]    1) fd  => %d\n", fd);
-
   if (fd >= PLUSXPN)
   {
     fd = fd - PLUSXPN;
@@ -269,18 +222,12 @@ struct generic_fd fdstable_get ( int fd )
     ret.type = FD_SYS;
     ret.real_fd = fd;
   }
-  debug_info("[bypass]\t fdstable_get -> type: %d ; real_fd: %d\n", ret.type, ret.real_fd);
-  debug_info("[bypass] << After fdstable_get....\n");
   return ret;
 }
 
 int fdstable_remove ( int fd )
 {
-  debug_info("[bypass] >> Before fdstable_remove....\n");
-  debug_info("[bypass]    1) fd  => %d\n", fd);
-
   if (fd < PLUSXPN) {
-    debug_info("[bypass] << After fdstable_remove....\n");
     return 0;
   }
 
@@ -292,7 +239,6 @@ int fdstable_remove ( int fd )
   if (fd < fdstable_first_free){
     fdstable_first_free = fd;
   }
-  debug_info("[bypass] << After fdstable_remove....\n");
   return 0;
 }
 
@@ -307,13 +253,13 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   if (syscall_number == SYS_creat){
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
-    // printf("CREAT");
+
     if (is_xpn_prefix(path))
     {
-        xpn_adaptor_keepInit ();
-        fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
-        ret = add_xpn_file_to_fdstable(fd);
-        *result = ret;
+      xpn_adaptor_keepInit();
+      fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
+      ret = add_xpn_file_to_fdstable(fd);
+      *result = ret;
     }
     else
     {
@@ -378,7 +324,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       printf(skip_xpn_prefix(path));
       fd = xpn_open(skip_xpn_prefix(path), flags);
       ret = add_xpn_file_to_fdstable(fd);
-      *result = ret;
+      *result = ret; 
     }
     else 
     {
