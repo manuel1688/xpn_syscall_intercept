@@ -313,7 +313,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         xpn_adaptor_keepInit ();
         fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
         ret = add_xpn_file_to_fdstable(fd);
-        printf("xpn_creat(%s, %o) -> %d\n", skip_xpn_prefix(path), mode, ret);
         *result = ret;
     }
     else
@@ -329,7 +328,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     const void *buf = (const void *)arg1;
     size_t nbyte = (size_t)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    // printf("fd: %d\n", fd); 
 
     if(virtual_fd.type == FD_XPN)
     {
@@ -341,7 +339,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
         return -1;
       }
       ret = xpn_write(virtual_fd.real_fd, (void *)buf, nbyte);
-      printf("xpn_write(%d, %p, %lu) -> %ld\n", virtual_fd.real_fd, buf, nbyte, ret);
       *result = ret;
     }
     else
@@ -355,15 +352,12 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     int ret = -1;
     int fd = (int)arg0;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    printf("CLOSE\n");
-    printf("fd: %d\n", fd);
 
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
       ret = xpn_close(virtual_fd.real_fd);
       fdstable_remove(fd);
-      printf("fdstable_remove(%d)\n", fd);
       *result = ret;
     }
     else
@@ -394,7 +388,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_read)
   {
-    printf("SYS_read\n");
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t nbyte = (size_t)arg2;
