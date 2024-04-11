@@ -9,15 +9,18 @@ CC=/home/lab/bin/mpich/bin/mpicc
 #-L../../src/xpn_client -L../../../mxml
 # cc xpn_syscall_intercept.c -lsyscall_intercept -fpic -shared -o xpn_syscall_intercept.so
 FLAGS=-Wall -Wextra -fpic -std=c11
-INCLUDE=-I../../include -I../../include/base -I../../include/xpn_client -I../../include/bypass -I../../../mxml xpn_file_descriptor.c -DNOT_TO_USE_FCNTL_H -DNOT_TO_USE_STDLIB_H
+INCLUDE=-I../../include -I../../include/base -I../../include/xpn_client -I../../include/bypass -I../../../mxml xpn_file -DNOT_TO_USE_FCNTL_H -DNOT_TO_USE_STDLIB_H
 LIBS=-L../xpn_client -lxpn -lmxml -lpthread -ldl -lsyscall_intercept -fpic
 
 all:
 	$(CC) $(FLAGS) $(INCLUDE) -c xpn_syscall_intercept.c
 	$(CC) -shared -o xpn_syscall_intercept.so xpn_syscall_intercept.o $(LIBS)
+	$(CC) $(FLAGS) $(INCLUDE) -c xpn_file_descriptor.c
+	$(CC) -shared -o xpn_file_descriptor.so xpn_file_descriptor.o $(LIBS)
 	
 install:
 	cp -f xpn_syscall_intercept.so ${prefix}/lib
+	cp -f xpn_file_descriptor.so ${prefix}/lib
 
 clean:
 	rm -f *.o
