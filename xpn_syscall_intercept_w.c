@@ -158,7 +158,6 @@ int xpn_adaptor_keepInit ( void )
     {
       xpn_adaptor_initCalled = atoi(xpn_adaptor_initCalled_env);
     }
-
     xpn_adaptor_initCalled_getenv = 1;
   }
   
@@ -250,11 +249,11 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   (void) arg5;
   int fd,ret;
 
-  if (syscall_number == SYS_creat){
+  if(syscall_number == SYS_creat){
     char *path = (char *)arg0;
     mode_t mode = (mode_t)arg1; 
 
-    if (is_xpn_prefix(path))
+    if(is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit();
       fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
