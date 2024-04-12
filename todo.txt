@@ -1,0 +1,51 @@
+open DONE
+write DONE
+read DONE
+close DONE
+creat DONE
+fopen DONE
+fclose DONE
+fread DONE
+fwrite DONE
+
+open64
+__open_2
+ftruncate
+pread
+pwrite
+lseek
+lseek64
+__lxstat64
+__xstat64
+__lxstat
+__xstat
+__fxstat
+rename
+unlink
+remove
+fseek
+ftell
+feof
+mkdir
+*opendir
+dirent
+dirent64
+closedir
+rmdir
+fork
+pipe
+dup
+dup2
+exit
+chdir
+chmod
+fchmod
+chown
+fcntl
+access
+*realpath
+__realpath_chk
+fsync
+flock
+MPI_Init
+MPI_Finalize

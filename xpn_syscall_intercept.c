@@ -83,6 +83,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   else if (syscall_number == SYS_openat)
   {
     //TODO: agregar soporte para el modo
+    //TODO: agregar soporte a file descriptor en el primer argumento
     char *path = (char *)arg1;
     int flags = (int)arg2;
 
@@ -123,7 +124,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  
   return 1;
 }
 
