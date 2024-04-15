@@ -7,6 +7,7 @@ fopen DONE
 fclose DONE
 fread DONE
 fwrite DONE
+fdopen
 
 open64
 __open_2
