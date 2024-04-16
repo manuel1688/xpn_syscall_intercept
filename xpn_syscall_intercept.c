@@ -124,7 +124,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_pwrite)
+  else if (syscall_number == SYS_pwrite64)
   {
     ssize_t ret = -1;
     int fd = (int)arg0;
