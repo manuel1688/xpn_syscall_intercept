@@ -156,6 +156,22 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if( syscall_number == SYS_lseek)
+  {
+    off_t ret = (off_t) -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      ret = xpn_lseek(virtual_fd.real_fd, offset, whence);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_lseek, arg0, arg1, arg2);
+    }
+    return 0;
+  }
   return 1;
 }
 

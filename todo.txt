@@ -7,30 +7,38 @@ fopen DONE
 fclose DONE
 fread DONE
 fwrite DONE
-fdopen
+open64 DONE
+pwrite DONE
 
-open64
-__open_2
-ftruncate
-pread
-pwrite
 lseek
 lseek64
+fseek
+
+fdopen NO ES LLAMADA AL SISTEMA
+
+__open_2
+
+pread
+ftruncate
+
 __lxstat64
-__xstat64
 __lxstat
+__xstat64
 __xstat
 __fxstat
+
 rename
 unlink
 remove
-fseek
+
 ftell
 feof
 mkdir
 *opendir
+
 dirent
 dirent64
+
 closedir
 rmdir
 fork
