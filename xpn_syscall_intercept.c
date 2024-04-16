@@ -42,7 +42,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     const void *buf = (const void *)arg1;
     size_t nbyte = (size_t)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    printf("fd: %d\n", fd);
+    
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit();
@@ -121,6 +121,38 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     else
     {
       *result = syscall_no_intercept(SYS_read, arg0, arg1, arg2);
+    }
+    return 0;
+  }
+  else if (syscall_number == SYS_pwrite)
+  {
+    ssize_t ret = -1;
+    int fd = (int)arg0;
+    const void *buf = (const void *)arg1;
+    size_t count = (size_t)arg2;
+    off_t offset = (off_t)arg3;
+    struct generic_fd virtual_fd = fdstable_get (fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      if (virtual_fd.is_file == 0)
+      {
+        errno = EISDIR;
+        return -1;
+      }
+
+      ret = xpn_lseek(virtual_fd.real_fd, offset, SEEK_SET);
+      if (ret != -1) {
+        ret = xpn_write(virtual_fd.real_fd, buf, count);
+      }
+      if (ret != -1) {
+        xpn_lseek(virtual_fd.real_fd, -ret, SEEK_CUR);
+      }
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_pwrite, arg0, arg1, arg2, arg3);
     }
     return 0;
   }
