@@ -159,6 +159,9 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   else if( syscall_number == SYS_lseek)
   {
     off_t ret = (off_t) -1;
+    int fd = (int)arg0;
+    off_t offset = (off_t)arg1;
+    int whence = (int)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
     if(virtual_fd.type == FD_XPN)
     {
