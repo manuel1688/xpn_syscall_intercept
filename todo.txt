@@ -10,11 +10,11 @@ fwrite DONE
 open64 DONE
 pwrite DONE
 lseek DONE
-lseek64
+lseek64 DONE
 fseek
+pread
 fdopen NO ES LLAMADA AL SISTEMA
 __open_2
-pread
 ftruncate
 __lxstat64
 __lxstat

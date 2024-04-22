@@ -177,6 +177,38 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if ( syscall_number == SYS_pread){
+    int fd = (int)arg0;
+    void *buf = (void *)arg1;
+    size_t count = (size_t)arg2;
+    off_t offset = (off_t)arg3;
+
+    ssize_t ret = -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+    print("SYS_pread\n");
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      if (virtual_fd.is_file == 0)
+      {
+        errno = EISDIR;
+        return -1;
+      }
+      ret = xpn_lseek(virtual_fd.real_fd, offset, SEEK_SET);
+      if (ret != -1) {
+        ret = xpn_read(virtual_fd.real_fd, buf, count);
+      }
+      if (ret != -1) {
+        xpn_lseek(virtual_fd.real_fd, -ret, SEEK_CUR);
+      }
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_pread, arg0, arg1, arg2, arg3);
+    }
+    return 0;
+  }
   return 1;
 }
 
