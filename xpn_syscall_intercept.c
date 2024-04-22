@@ -185,7 +185,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
     ssize_t ret = -1;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    print("SYS_pread\n");
+    printf("SYS_pread\n");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
