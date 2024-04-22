@@ -177,7 +177,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if ( syscall_number == SYS_pread){
+  else if ( syscall_number == SYS_pread64){
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t count = (size_t)arg2;
@@ -185,7 +185,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
     ssize_t ret = -1;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    printf("SYS_pread\n");
+    printf("SYS_pread64\n");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
@@ -205,7 +205,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     else
     {
-      *result = syscall_no_intercept(SYS_pread, arg0, arg1, arg2, arg3);
+      *result = syscall_no_intercept(SYS_pread64, arg0, arg1, arg2, arg3);
     }
     return 0;
   }
