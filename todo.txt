@@ -9,36 +9,27 @@ fread DONE
 fwrite DONE
 open64 DONE
 pwrite DONE
-
-lseek
+lseek DONE
 lseek64
 fseek
-
 fdopen NO ES LLAMADA AL SISTEMA
-
 __open_2
-
 pread
 ftruncate
-
 __lxstat64
 __lxstat
 __xstat64
 __xstat
 __fxstat
-
 rename
 unlink
 remove
-
 ftell
 feof
 mkdir
 *opendir
-
 dirent
 dirent64
-
 closedir
 rmdir
 fork

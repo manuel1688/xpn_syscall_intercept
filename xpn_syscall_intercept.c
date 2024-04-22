@@ -163,6 +163,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     off_t offset = (off_t)arg1;
     int whence = (int)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
+    printf("SYS_lseek");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
