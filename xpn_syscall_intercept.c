@@ -209,7 +209,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == "SYS_ftruncate"){
+  else if (syscall_number == SYS_ftruncate){
     int fd = (int)arg0;
     off_t length = (off_t)arg1;
 
