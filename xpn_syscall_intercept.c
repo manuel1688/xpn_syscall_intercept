@@ -209,6 +209,25 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if (syscall_number == "SYS_ftruncate"){
+    int fd = (int)arg0;
+    off_t length = (off_t)arg1;
+
+    int ret = -1;
+    struct generic_fd virtual_fd = fdstable_get ( fd );
+    printf("SYS_ftruncate\n");
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit ();
+      ret = xpn_ftruncate(virtual_fd.real_fd, length);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_ftruncate, arg0, arg1);
+    }
+    return 0;
+  }
   return 1;
 }
 
