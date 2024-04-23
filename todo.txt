@@ -1,21 +1,22 @@
-open DONE
-write DONE
-read DONE
-close DONE
-creat DONE
-fopen DONE
-fclose DONE
-fread DONE
-fwrite DONE
-open64 DONE
-pwrite DONE
-lseek DONE
-lseek64 DONE
-fseek DONE
-pread DONE
-fdopen NO ES LLAMADA AL SISTEMA
-__open_2 NO ES LLAMADA AL SISTEMA
-ftruncate
+openat LISTO
+open LISTO
+write LISTO
+read LISTO
+close LISTO
+creat LISTO
+fopen LISTO
+fclose LISTO
+fread LISTO
+fwrite LISTO
+open64 LISTO
+pwrite LISTO
+lseek LISTO
+lseek64 LISTO
+fseek LISTO
+pread LISTO
+ftruncate LISTO | No modifico el tamano del archivo
+__open_2 LISTO 
+fdopen ¿NO ES LLAMADA AL SISTEMA?
 __lxstat64
 __lxstat
 __xstat64
