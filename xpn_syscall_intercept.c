@@ -230,8 +230,8 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_newfstatat)
   {
-    struct stat *buf = (struct stat *)arg1;
     char *path = (char *)arg0;
+    struct stat *buf = (struct stat *)arg1;
     int ret = -1;
   
     printf("SYS_stat\n");
@@ -243,7 +243,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     else
     {
-      *result = syscall_no_intercept(SYS_stat, arg0, arg1);
+      *result = syscall_no_intercept(SYS_newfstatat, arg0, arg1);
     }
     return 0;
   }
