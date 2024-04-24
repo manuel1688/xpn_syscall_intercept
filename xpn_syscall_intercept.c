@@ -232,7 +232,9 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   {
     // (AT_FDCWD, "/tmp/expand/P1/demo.txt", 0x7ffd6c137000, 0x0)
     // int fd = (int)arg0;
-    
+    char *path = (char *)arg1;
+    printf("SYS_newfstatat\n");
+    printf("path: %s\n", path);
     *result = syscall_no_intercept(SYS_newfstatat, arg0, arg1, arg2, arg3);
     return 0;
     
