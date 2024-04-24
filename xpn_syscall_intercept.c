@@ -246,7 +246,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     else
     {
-      *result = syscall_no_intercept(SYS_newfstatat, arg0, arg1);
+      *result = syscall_no_intercept(SYS_newfstatat, arg0, arg1, arg2, arg3);
     }
     return 0;
   }
