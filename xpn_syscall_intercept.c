@@ -228,11 +228,12 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_stat)
+  else if(syscall_number == SYS_stat || syscall_number == SYS_lstat || syscall_number == SYS_fstat)
   {
     struct stat *buf = (struct stat *)arg1;
     char *path = (char *)arg0;
     int ret = -1;
+  
     printf("SYS_stat\n");
     if (is_xpn_prefix(path))
     {
