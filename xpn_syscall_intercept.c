@@ -230,8 +230,11 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_newfstatat)
   {
-    char *path = (char *)arg0;
-    struct stat *buf = (struct stat *)arg1;
+    // (AT_FDCWD, "/tmp/expand/P1/demo.txt", 0x7ffd6c137000, 0x0)
+    int fd = (int)arg0;
+    char *path = (char *)arg1;
+    struct stat *buf = (struct stat *)arg2;
+    
     int ret = -1;
   
     printf("SYS_stat\n");
