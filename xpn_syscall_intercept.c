@@ -237,7 +237,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg1;
     int ret = -1;
   
-    if (fd != AT_FDCWD){
+    if (fd != -100){
       
       struct generic_fd virtual_fd = fdstable_get(fd);
       if (virtual_fd.type == FD_XPN)
