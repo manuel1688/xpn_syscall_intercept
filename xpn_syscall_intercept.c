@@ -156,7 +156,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if( syscall_number == SYS_lseek)
+  else if(syscall_number == SYS_lseek)
   {
     off_t ret = (off_t) -1;
     int fd = (int)arg0;
@@ -177,7 +177,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if ( syscall_number == SYS_pread64){
+  else if (syscall_number == SYS_pread64){
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t count = (size_t)arg2;
@@ -230,13 +230,27 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if(syscall_number == SYS_newfstatat)
   // TODO: Investigar donde es que el stat se pasa a la syscall newfstatat
-  {
+  { 
     // (AT_FDCWD, "/tmp/expand/P1/demo.txt", 0x7ffd6c137000, 0x0)
-    // int fd = (int)arg0;
+    int fd = (int)arg0;
     char *path = (char *)arg1;
     int ret = -1;
   
-    if (is_xpn_prefix(path))
+    if (fd != AT_FDCWD){
+      
+      struct generic_fd virtual_fd = fdstable_get(fd);
+      if (virtual_fd.type == FD_XPN)
+      {
+        xpn_adaptor_keepInit ();
+        ret = xpn_fstat(virtual_fd.real_fd, buf);
+        *result = ret;
+      }
+      else
+      {
+        *result = syscall_no_intercept(SYS_newfstatat, arg0, arg1, arg2, arg3);
+      }
+    
+    } else if (is_xpn_prefix(path))
     {
       struct stat *buf = (struct stat *)arg2;
       xpn_adaptor_keepInit();
