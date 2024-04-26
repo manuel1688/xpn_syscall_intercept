@@ -164,11 +164,11 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     off_t offset = (off_t)arg1;
     int whence = (int)arg2;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    printf("SYS_lseek");
+    // printf("SYS_lseek");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
-      printf("offset: %ld\n", offset);
+      // printf("offset: %ld\n", offset);
       ret = xpn_lseek(virtual_fd.real_fd, offset, whence);
       *result = ret;
     }
@@ -186,7 +186,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
     ssize_t ret = -1;
     struct generic_fd virtual_fd = fdstable_get(fd);
-    printf("SYS_pread64\n");
+    // printf("SYS_pread64\n");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
@@ -216,7 +216,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
 
     int ret = -1;
     struct generic_fd virtual_fd = fdstable_get ( fd );
-    printf("SYS_ftruncate\n");
+    // printf("SYS_ftruncate\n");
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit ();
