@@ -279,6 +279,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if (syscall_number == SYS_unlink)
+  {
+    int ret = -1;
+    char *path = (char *)arg0;
+    
+    if (is_xpn_prefix(path))
+    {
+      xpn_adaptor_keepInit ();
+      ret = (xpn_unlink(skip_xpn_prefix(path)));
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_unlink, arg0);
+    }
+    return 0;
+  }
   return 1;
 }
 
