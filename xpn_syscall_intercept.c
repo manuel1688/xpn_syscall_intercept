@@ -298,31 +298,21 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  // else if (syscall_number ==  SYS_remove)
-  // {
-  //   int ret = -1;
-  //   char *path = (char *)arg0;
-  //   if (is_xpn_prefix(path))
-  //   {
-  //     xpn_adaptor_keepInit ();
-  //     struct stat buf;
-  //     ret = xpn_stat(skip_xpn_prefix(path), &buf);
-  //     if ((buf.st_mode & S_IFMT) == S_IFREG) 
-  //     {
-  //       ret = (xpn_unlink(skip_xpn_prefix(path)));
-  //     }
-  //     else if ((buf.st_mode & S_IFMT) == S_IFDIR)
-  //     {
-  //       ret = xpn_rmdir( (skip_xpn_prefix(path)) );
-  //     }
-  //     *result = ret;
-  //   }
-  //   else
-  //   {
-  //     *result = syscall_no_intercept(SYS_remove, arg0);
-  //   }
-  //   return 0;
-  // }
+  else if (syscall_number == SYS_rmdir)
+  {
+    int ret = -1;
+    if (is_xpn_prefix(path))
+    {
+      xpn_adaptor_keepInit();
+      ret = xpn_rmdir((skip_xpn_prefix(path)));
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_rmdir, arg0);
+    }
+    return 0;
+  }
   return 1;
 }
 
