@@ -230,9 +230,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     return 0;
   }
   else if(syscall_number == SYS_newfstatat)
-  // TODO: Investigar donde es que el stat se pasa a la syscall newfstatat
   { 
-    // (AT_FDCWD, "/tmp/expand/P1/demo.txt", 0x7ffd6c137000, 0x0)
     int fd = (int)arg0;
     char *path = (char *)arg1;
     struct stat *buf = (struct stat *)arg2;
@@ -264,23 +262,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  // else if(syscall_number == SYS_lstat) //TODO: Rectificar si en efecto se esta intersentado lstat por apartde de la syscall newfstatat
-  // {
-  //   char *path = (char *)arg0;
-  //   struct stat *buf = (struct stat *)arg1;
-  //   int ret;
-  //   if (is_xpn_prefix(path))
-  //   {
-  //     xpn_adaptor_keepInit ();
-  //     ret = xpn_stat(skip_xpn_prefix(path), buf);
-  //     *result = ret;
-  //   }
-  //   else
-  //   {
-  //     *result = syscall_no_intercept(SYS_lstat, arg0, arg1);
-  //   }
-  //   return 0;
-  // }
+  else if (syscall_number == SYS_rename)
+  {
+    char *old_path = (char *)arg0;
+    char *new_path = (char *)arg1;
+    int ret = -1;
+    if(is_xpn_prefix( old_path) && is_xpn_prefix( new_path))
+    {
+      xpn_adaptor_keepInit ();
+      ret = xpn_rename(skip_xpn_prefix(old_path), skip_xpn_prefix(new_path));
+      *result = ret;
+    }
+    else 
+    {
+      *result = syscall_no_intercept(SYS_rename, arg0, arg1);
+    }
+    return 0;
+  }
   return 1;
 }
 
