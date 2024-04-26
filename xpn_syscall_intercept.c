@@ -62,7 +62,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_close)
+  else if(syscall_number == SYS_close)
   {
     int ret = -1;
     int fd = (int)arg0;
@@ -81,7 +81,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_openat)
+  else if(syscall_number == SYS_openat)
   {
     //TODO: agregar soporte para el modo
     //TODO: agregar soporte a file descriptor en el primer argumento
@@ -125,7 +125,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_pwrite64)
+  else if(syscall_number == SYS_pwrite64)
   {
     ssize_t ret = -1;
     int fd = (int)arg0;
@@ -178,7 +178,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_pread64){
+  else if(syscall_number == SYS_pread64){
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t count = (size_t)arg2;
@@ -210,7 +210,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if (syscall_number == SYS_ftruncate){
+  else if(syscall_number == SYS_ftruncate){
     int fd = (int)arg0;
     off_t length = (off_t)arg1;
 
@@ -264,6 +264,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  // else if(syscall_number == SYS_lstat) //TODO: Rectificar si en efecto se esta intersentado lstat por apartde de la syscall newfstatat
+  // {
+  //   char *path = (char *)arg0;
+  //   struct stat *buf = (struct stat *)arg1;
+  //   int ret;
+  //   if (is_xpn_prefix(path))
+  //   {
+  //     xpn_adaptor_keepInit ();
+  //     ret = xpn_stat(skip_xpn_prefix(path), buf);
+  //     *result = ret;
+  //   }
+  //   else
+  //   {
+  //     *result = syscall_no_intercept(SYS_lstat, arg0, arg1);
+  //   }
+  //   return 0;
+  // }
   return 1;
 }
 
