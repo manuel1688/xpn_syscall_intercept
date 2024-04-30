@@ -9,8 +9,8 @@
 #include <linux/kernel.h>
 #include "xpn_file_descriptor.h"
 
-static int xpn_adaptor_initCalled = 0;
-static int xpn_adaptor_initCalled_getenv = 0; 
+int xpn_adaptor_initCalled = 0;
+int xpn_adaptor_initCalled_getenv = 0; 
 
 char *xpn_adaptor_partition_prefix = "/tmp/expand/"; 
 int  xpn_prefix_change_verified = 0;
