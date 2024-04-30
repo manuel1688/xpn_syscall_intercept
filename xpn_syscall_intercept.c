@@ -318,6 +318,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   {
     int ret = -1;
     char *path = (char *)arg0;
+    mode_t mode = (mode_t)arg1;
     if (is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit ();
