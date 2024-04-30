@@ -331,6 +331,15 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if (syscall_number == SYS_fork)
+  {
+    int ret = -1;
+    ret = dlsym_fork();
+    if(0 == ret){
+      xpn_adaptor_initCalled = 0;
+    }
+    return ret;
+  }
   return 1;
 }
 
