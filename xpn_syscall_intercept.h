@@ -35,7 +35,7 @@ alderon Mateos
   #include <stdarg.h>
 
   #include "xpn.h"
-  // #include "syscall_proxies.h"
+  #include "syscall_proxies.h"
 
   #include <dirent.h>
   #include <string.h>
