@@ -346,12 +346,14 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       }
 
       if (mode == F_OK){
-        return 0;
+        ret = 0;
+        *result = ret;
       }
 
       if ((mode & X_OK) == 0 || (stats.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
       {
-        return 0;
+        ret = 0;
+        *result = ret;
       }
     }
     else
