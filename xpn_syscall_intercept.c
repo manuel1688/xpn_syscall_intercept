@@ -236,6 +236,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     int fd = (int)arg0;
     char *path = (char *)arg1;
     struct stat *buf = (struct stat *)arg2;
+    
     int ret = -1;
 
     if (fd != -100){
@@ -331,34 +332,34 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  // else if (syscall_number == SYS_access)
-  // {
-  //   char *path = (char *)arg0;
-  //   int mode = (int)arg1;
-  //   struct stat64 stats;
-  //   int ret = -1;
-  //   if (is_xpn_prefix(path))
-  //   {
-  //     xpn_adaptor_keepInit();
-  //     if (__lxstat64(_STAT_VER, path, &stats)){
-  //       return -1;
-  //     }
+  else if (syscall_number == SYS_access)
+  {
+    char *path = (char *)arg0;
+    int mode = (int)arg1;
+    struct stat stats;
+    int ret = -1;
+    if (is_xpn_prefix(path))
+    {
+      xpn_adaptor_keepInit();
+      if (syscall_no_intercept(SYS_newfstatat, arg0, arg1, &stats, arg3)){
+        return -1;
+      }
 
-  //     if (mode == F_OK){
-  //       return 0;
-  //     }
+      if (mode == F_OK){
+        return 0;
+      }
 
-  //     if ((mode & X_OK) == 0 || (stats.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
-  //     {
-  //       return 0;
-  //     }
-  //   }
-  //   else
-  //   {
-  //     *result = syscall_no_intercept(SYS_access, arg0, arg1);
-  //   }
-  //   return 0;
-  // }
+      if ((mode & X_OK) == 0 || (stats.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
+      {
+        return 0;
+      }
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_access, arg0, arg1);
+    }
+    return 0;
+  }
   return 1;
 }
 
