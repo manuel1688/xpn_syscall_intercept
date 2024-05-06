@@ -333,6 +333,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
   }
   else if (syscall_number == SYS_access)
   {
+    char *path = (char *)arg0;
     struct stat64 stats;
     int ret = -1;
     if (is_xpn_prefix(path))
