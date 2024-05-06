@@ -341,19 +341,22 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     if (is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit();
-      if (syscall_no_intercept(SYS_newfstatat, arg0, arg1, &stats, arg3)){
-        return -1;
+      
+      ret = xpn_stat(skip_xpn_prefix(path), &stats);
+      if (ret < 0) {
+        *result = ret;
+        return 0;
       }
 
       if (mode == F_OK){
-        ret = 0;
-        *result = ret;
+        *result = 0;
+        return 0;
       }
 
       if ((mode & X_OK) == 0 || (stats.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
       {
-        ret = 0;
-        *result = ret;
+        *result = 0;
+        return 0;
       }
     }
     else
