@@ -343,6 +343,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       xpn_adaptor_keepInit();
       
       ret = xpn_stat(skip_xpn_prefix(path), &stats);
+      printf("LOG ret: %d\n", ret);
       if (ret < 0) {
         *result = ret;
         return 0;
