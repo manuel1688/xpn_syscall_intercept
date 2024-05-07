@@ -38,7 +38,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_write)
+  else if (syscall_number == SYS_write)
   {
     ssize_t ret = -1;
     int fd = (int)arg0;
@@ -64,7 +64,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_close)
+  else if (syscall_number == SYS_close)
   {
     int ret = -1;
     int fd = (int)arg0;
@@ -83,7 +83,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_openat)
+  else if (syscall_number == SYS_openat)
   {
     //TODO: agregar soporte para el modo
     //TODO: agregar soporte a file descriptor en el primer argumento
@@ -103,7 +103,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_read)
+  else if (syscall_number == SYS_read)
   {
     int fd = (int)arg0;
     void *buf = (void *)arg1;
@@ -127,7 +127,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_pwrite64)
+  else if (syscall_number == SYS_pwrite64)
   {
     ssize_t ret = -1;
     int fd = (int)arg0;
@@ -159,7 +159,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_lseek)
+  else if (syscall_number == SYS_lseek)
   {
     off_t ret = (off_t) -1;
     int fd = (int)arg0;
@@ -180,7 +180,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_pread64){
+  else if (syscall_number == SYS_pread64){
     int fd = (int)arg0;
     void *buf = (void *)arg1;
     size_t count = (size_t)arg2;
@@ -212,7 +212,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_ftruncate){
+  else if (syscall_number == SYS_ftruncate){
     int fd = (int)arg0;
     off_t length = (off_t)arg1;
 
@@ -231,7 +231,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
-  else if(syscall_number == SYS_newfstatat)
+  else if (syscall_number == SYS_newfstatat)
   { 
     int fd = (int)arg0;
     char *path = (char *)arg1;
@@ -343,7 +343,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       xpn_adaptor_keepInit();
       
       ret = xpn_stat(skip_xpn_prefix(path), &stats);
-      printf("LOG ret: %d\n", ret);
       if (ret < 0) {
         *result = ret;
         return 0;
@@ -363,6 +362,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     else
     {
       *result = syscall_no_intercept(SYS_access, arg0, arg1);
+    }
+    return 0;
+  }
+  else if (syscall_number == SYS_dup)
+  {
+    int fd = (int)arg0;
+    int ret = -1;
+    struct generic_fd virtual_fd = fdstable_get(fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      xpn_adaptor_keepInit();
+      ret = xpn_dup(virtual_fd.real_fd);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_dup, arg0);
     }
     return 0;
   }
