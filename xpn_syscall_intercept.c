@@ -373,6 +373,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     if(virtual_fd.type == FD_XPN)
     {
       xpn_adaptor_keepInit();
+      printf(virtual_fd.real_fd)
       ret = xpn_dup(virtual_fd.real_fd);
       *result = ret;
     }
