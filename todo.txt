@@ -16,37 +16,44 @@ fseek LISTO
 pread LISTO
 ftruncate LISTO | No modifico el tamano del archivo
 __open_2 LISTO 
-fdopen ¿NO ES LLAMADA AL SISTEMA?
-__lxstat64
-__lxstat
-__xstat64
-__xstat
-__fxstat
-rename
-unlink
-remove
-ftell
-feof
-mkdir
-*opendir
-dirent
-dirent64
-closedir
-rmdir
-fork
-pipe
+__xstat LISTO
+__fxstat LISTO
+__lxstat64 LISTO
+__lxstat LISTO
+__xstat64 LISTO
+rename LISTO
+unlink LISTO
+remove LISTO
+mkdir LISTO
+rmdir LISTO
+ftell LISTO
+access LISTO
+
 dup
 dup2
-exit
 chdir
 chmod
 fchmod
 chown
 fcntl
-access
-*realpath
-__realpath_chk
+
 fsync
 flock
-MPI_Init
-MPI_Finalize
+
+fork
+pipe
+
+exit - es Usada por _exit (¿Es una llamada?)
+feof - libc
+*opendir - Usa open y fcntl
+closedir - Usa close
+__realpath_chk - glibc
+dirent - es Usada por opendir
+dirent64 - dirent para grandes archivos
+fdopen ¿NO ES LLAMADA AL SISTEMA?
+*realpath - no es una llamada al sistema directa (¿readlink?)
+
+brk
+futex
+mmap -- ¿?
+getuid
