@@ -399,6 +399,23 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if (syscall_number == SYS_chmod)
+  {
+    char *path = (char *)arg0;
+    mode_t mode = (mode_t)arg1;
+    int ret = -1;
+    if (is_xpn_prefix(path))
+    {
+      xpn_adaptor_keepInit ();
+      ret = xpn_chmod(skip_xpn_prefix(path), mode);
+      *result = ret;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_chmod, arg0, arg1);
+    }
+    return 0;
+  }
   return 1;
 }
 
