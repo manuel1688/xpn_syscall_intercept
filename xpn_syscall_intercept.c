@@ -406,6 +406,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     int ret = -1;
     if (is_xpn_prefix(path))
     {
+      printf("ENTRO");
       xpn_adaptor_keepInit ();
       ret = xpn_chmod(skip_xpn_prefix(path), mode);
       *result = ret;
