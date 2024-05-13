@@ -406,7 +406,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     int ret = -1;
     if (is_xpn_prefix(path))
     {
-      printf("ENTRO");
       xpn_adaptor_keepInit ();
       ret = xpn_chmod(skip_xpn_prefix(path), mode);
       *result = ret;
@@ -414,6 +413,24 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     else
     {
       *result = syscall_no_intercept(SYS_chmod, arg0, arg1);
+    }
+    return 0;
+  }
+  else if (syscall_number == SYS_fcntl)
+  {
+    int fd = (int)arg0;
+    int arg1 = (int)arg1;
+    int arg2 = (int)arg2;
+    
+    int ret = -1;
+    struct generic_fd virtual_fd = fdstable_get ( fd );
+    if(virtual_fd.type == FD_XPN)
+    {
+      *result = 0;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_fcntl, arg0, arg1, arg2);
     }
     return 0;
   }
