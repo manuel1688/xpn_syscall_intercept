@@ -192,6 +192,7 @@ int is_xpn_prefix(const char * path)
   {
     xpn_prefix_change_verified = 1;
     char * env_prefix = getenv("XPN_MOUNT_POINT");
+    printf("%s\n",env_prefix);
     if (env_prefix != NULL)
     {
       xpn_adaptor_partition_prefix = env_prefix;
@@ -199,6 +200,9 @@ int is_xpn_prefix(const char * path)
   }
   
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
+  printf("prefix: %s\n",prefix);
+  prinft("strncmp(prefix, path, strlen(prefix)): %d\n",strncmp(prefix, path, strlen(prefix)));
+  printf("strlen(path) %d strlen(prefix): %d\n",strlen(path),strlen(prefix));
   return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix));
 }
 
