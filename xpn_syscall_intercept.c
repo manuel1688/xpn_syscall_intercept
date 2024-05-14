@@ -90,12 +90,9 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg1;
     int flags = (int)arg2;
 
-    
     if (is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit();
-      // printf("PATH: %s\n",path);
-      // printf("skip_xpn_prefix(path): %s\n",skip_xpn_prefix(path));
       fd = xpn_open(skip_xpn_prefix(path), flags);
       ret = add_xpn_file_to_fdstable(fd);
       *result = ret; 
@@ -352,7 +349,6 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       }
 
       if (mode == F_OK){
-        ret = 0;
         *result = 0;
         return 0;
       }
@@ -430,8 +426,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     struct generic_fd virtual_fd = fdstable_get(fd);
     if(virtual_fd.type == FD_XPN)
     {
-      ret = 0;
-      *result = ret;
+      *result = 0;
     }
     else
     {

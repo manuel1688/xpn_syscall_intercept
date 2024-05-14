@@ -187,24 +187,18 @@ int xpn_adaptor_keepInit ( void )
 
 int is_xpn_prefix(const char * path) 
 {
-  // printf("xpn_prefix_change_verified: %d\n",xpn_prefix_change_verified);
   if (0 == xpn_prefix_change_verified)
   {
     xpn_prefix_change_verified = 1;
     char * env_prefix = getenv("XPN_MOUNT_POINT");
-    // printf("env_prefix: %s\n",env_prefix);
     if (env_prefix != NULL)
     {
       xpn_adaptor_partition_prefix = env_prefix;
-      // printf("xpn_adaptor_partition_prefix: %s\n",xpn_adaptor_partition_prefix);
     }
   }
   
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
-  // printf("prefix: %s\n",prefix);
-  // printf("strncmp(prefix, path, strlen(prefix)): %d\n",strncmp(prefix, path, strlen(prefix)));
-  // printf("strlen(path) %ld strlen(prefix): %ld\n",strlen(path),strlen(prefix));
-  return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix));
+  return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix) );
 }
 
 const char * skip_xpn_prefix ( const char * path ) 
