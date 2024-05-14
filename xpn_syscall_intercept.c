@@ -428,8 +428,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     struct generic_fd virtual_fd = fdstable_get(fd);
     if(virtual_fd.type == FD_XPN)
     {
-      ret = 0
-      *result = ret;
+      *result = 0;
     }
     else
     {
