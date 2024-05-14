@@ -90,9 +90,11 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     char *path = (char *)arg1;
     int flags = (int)arg2;
 
+    printf('PATH: %s',path)
     if (is_xpn_prefix(path))
     {
       xpn_adaptor_keepInit();
+      printf('skip_xpn_prefix(path): %s',skip_xpn_prefix(path))
       fd = xpn_open(skip_xpn_prefix(path), flags);
       ret = add_xpn_file_to_fdstable(fd);
       *result = ret; 
