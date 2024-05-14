@@ -200,7 +200,7 @@ int is_xpn_prefix(const char * path)
   }
   
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
-  printf("prefix: %s\n",prefix);
+  // printf("prefix: %s\n",prefix);
   // prinft("strncmp(prefix, path, strlen(prefix)): %d\n",strncmp(prefix, path, strlen(prefix)));
   // printf("strlen(path) %ld strlen(prefix): %ld\n",strlen(path),strlen(prefix));
   return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix));
