@@ -351,6 +351,7 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
       }
 
       if (mode == F_OK){
+        ret = 0;
         *result = 0;
         return 0;
       }
