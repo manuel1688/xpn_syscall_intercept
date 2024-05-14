@@ -416,6 +416,24 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     }
     return 0;
   }
+  else if (syscall_number == SYS_fcntl)
+  {
+    int fd = (int)arg0;
+    int arg1 = (int)arg1;
+    int arg2 = (int)arg2;
+
+    int ret = -1;
+    struct generic_fd virtual_fd = fdstable_get (fd);
+    if(virtual_fd.type == FD_XPN)
+    {
+      *result = 0;
+    }
+    else
+    {
+      *result = syscall_no_intercept(SYS_fcntl, arg0, arg1, arg2);
+    }
+    return 0;
+  }
   return 1;
 }
 
