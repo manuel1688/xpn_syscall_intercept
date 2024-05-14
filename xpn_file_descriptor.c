@@ -196,6 +196,7 @@ int is_xpn_prefix(const char * path)
     if (env_prefix != NULL)
     {
       xpn_adaptor_partition_prefix = env_prefix;
+      printf("xpn_adaptor_partition_prefix: %s\n",xpn_adaptor_partition_prefix);
     }
   }
   
