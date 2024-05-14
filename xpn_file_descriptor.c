@@ -187,6 +187,7 @@ int xpn_adaptor_keepInit ( void )
 
 int is_xpn_prefix(const char * path) 
 {
+  printf("xpn_prefix_change_verified: %d",xpn_prefix_change_verified);
   if (0 == xpn_prefix_change_verified)
   {
     xpn_prefix_change_verified = 1;
@@ -198,7 +199,7 @@ int is_xpn_prefix(const char * path)
   }
   
   const char *prefix = (const char *)xpn_adaptor_partition_prefix;
-  return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix) );
+  return ( !strncmp(prefix, path, strlen(prefix)) && strlen(path) > strlen(prefix));
 }
 
 const char * skip_xpn_prefix ( const char * path ) 
