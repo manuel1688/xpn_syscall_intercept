@@ -192,7 +192,7 @@ int is_xpn_prefix(const char * path)
   {
     xpn_prefix_change_verified = 1;
     char * env_prefix = getenv("XPN_MOUNT_POINT");
-    printf("%s\n",env_prefix);
+    // printf("%s\n",env_prefix);
     if (env_prefix != NULL)
     {
       xpn_adaptor_partition_prefix = env_prefix;
