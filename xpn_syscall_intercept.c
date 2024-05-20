@@ -89,9 +89,18 @@ static int hook(long syscall_number,long arg0, long arg1,long arg2, long arg3,lo
     //TODO: agregar soporte a file descriptor en el primer argumento
     char *path = (char *)arg1;
     int flags = (int)arg2;
+    int mode = (int)arg3;
     printf("Arg3: %ld\n", arg3);
 
-    if (is_xpn_prefix(path))
+    if (is_xpn_prefix(path) && (flags & O_CREAT))
+    {
+      xpn_adaptor_keepInit();
+      fd  = xpn_creat((const char *)skip_xpn_prefix(path),mode);
+      ret = add_xpn_file_to_fdstable(fd);
+      *result = ret;
+    } 
+    else
+    if (is_xpn_prefix(path) )
     {
       xpn_adaptor_keepInit();
       fd = xpn_open(skip_xpn_prefix(path), flags);
